@@ -11,6 +11,9 @@ import {
   RectangleStackIcon,
   StarIcon,
   EllipsisHorizontalIcon,
+  XMarkIcon,
+  TrashIcon,
+  ArchiveBoxIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { cn } from '@/lib/utils';
@@ -21,9 +24,15 @@ const BoardsPage: React.FC = () => {
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    title: '',
+    description: '',
+    color: '#3b82f6'
+  });
   
   const starredBoards = boards.filter(board => board.is_starred);
-  const recentBoards = boards.filter(board => !board.is_starred);
+  const recentBoards = boards.filter(board => !board.is_starred && !board.is_archived);
 
   useEffect(() => {
     fetchBoards();
@@ -44,20 +53,62 @@ const BoardsPage: React.FC = () => {
   };
 
   const handleCreateBoard = async () => {
+    if (!createForm.title.trim()) {
+      setError('Board title is required');
+      return;
+    }
+    
     try {
       const newBoard = await boardsAPI.createBoard({
-        title: 'New Board',
-        description: 'Add a description for your board',
-        color: 'bg-blue-500'
+        title: createForm.title,
+        description: createForm.description,
+        color: createForm.color
       });
       setBoards([...boards, newBoard]);
+      setShowCreateForm(false);
+      setCreateForm({ title: '', description: '', color: '#3b82f6' });
+      setError(null);
     } catch (err) {
       console.error('Failed to create board:', err);
       setError('Failed to create board');
     }
   };
+
+  const handleDeleteBoard = async (boardId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!confirm('Are you sure you want to delete this board?')) return;
+    
+    try {
+      await boardsAPI.deleteBoard(boardId);
+      setBoards(boards.filter(board => board.id !== boardId));
+    } catch (err) {
+      console.error('Failed to delete board:', err);
+      setError('Failed to delete board');
+    }
+  };
+
+  const handleToggleStar = async (boardId: string, isStarred: boolean, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const updatedBoard = await boardsAPI.updateBoard(boardId, { is_starred: !isStarred });
+      setBoards(boards.map(board => board.id === boardId ? updatedBoard : board));
+    } catch (err) {
+      console.error('Failed to update board:', err);
+      setError('Failed to update board');
+    }
+  };
+
+  const colorOptions = [
+    '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
+    '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6b7280'
+  ];
   
-  const getCompletionPercentage = (completed: number, total: number) => {
+  const getCompletionPercentage = (completed: number = 0, total: number = 0) => {
+    if (total === 0) return 0;
     return Math.round((completed / total) * 100);
   };
   
@@ -76,12 +127,100 @@ const BoardsPage: React.FC = () => {
           <Button
             icon={<PlusIcon className="w-5 h-5" />}
             className="bg-grape-600 hover:bg-grape-700"
-            onClick={handleCreateBoard}
+            onClick={() => setShowCreateForm(true)}
             disabled={loading}
           >
             Create Board
           </Button>
         </div>
+
+        {/* Create Board Form */}
+        {showCreateForm && (
+          <Card className="mb-6 border-grape-200">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Create New Board</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<XMarkIcon className="w-4 h-4" />}
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    setCreateForm({ title: '', description: '', color: '#3b82f6' });
+                  }}
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Board Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.title}
+                    onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
+                    placeholder="Enter board title"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-grape-500"
+                    autoFocus
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    value={createForm.description}
+                    onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                    placeholder="Enter board description"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-grape-500"
+                    rows={3}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Board Color
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    {colorOptions.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setCreateForm({ ...createForm, color })}
+                        className={cn(
+                          "w-8 h-8 rounded-lg border-2 transition-all",
+                          createForm.color === color ? "border-gray-900 scale-110" : "border-gray-200"
+                        )}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3 pt-2">
+                  <Button
+                    onClick={handleCreateBoard}
+                    disabled={!createForm.title.trim() || loading}
+                    className="bg-grape-600 hover:bg-grape-700"
+                  >
+                    Create Board
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setShowCreateForm(false);
+                      setCreateForm({ title: '', description: '', color: '#3b82f6' });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
         {/* Starred Boards */}
         {starredBoards.length > 0 && (
@@ -97,12 +236,30 @@ const BoardsPage: React.FC = () => {
                   <Card clickable hover className="h-full">
                     <CardHeader>
                       <div className="flex items-start justify-between">
-                        <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', board.color)}>
+                        <div 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center"
+                          style={{ backgroundColor: board.color }}
+                        >
                           <RectangleStackIcon className="w-5 h-5 text-white" />
                         </div>
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <EllipsisHorizontalIcon className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center space-x-1">
+                          <button 
+                            onClick={(e) => handleToggleStar(board.id, board.is_starred || false, e)}
+                            className="text-gray-400 hover:text-yellow-500"
+                          >
+                            {board.is_starred ? (
+                              <StarIconSolid className="w-4 h-4 text-yellow-500" />
+                            ) : (
+                              <StarIcon className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button 
+                            onClick={(e) => handleDeleteBoard(board.id, e)}
+                            className="text-gray-400 hover:text-red-500"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                       
                       <h3 className="text-lg font-semibold text-gray-900 mt-3">
@@ -120,31 +277,31 @@ const BoardsPage: React.FC = () => {
                           <div className="flex items-center justify-between text-sm mb-1">
                             <span className="text-gray-600">Progress</span>
                             <span className="font-medium">
-                              {getCompletionPercentage(board.completedCards, board.totalCards)}%
+                              {getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%
                             </span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
                               className="bg-grape-500 h-2 rounded-full transition-all"
                               style={{
-                                width: `${getCompletionPercentage(board.completedCards, board.totalCards)}%`
+                                width: `${getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%`
                               }}
                             />
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            {board.completedCards} of {board.totalCards} cards completed
+                            {board.completedCards || 0} of {board.totalCards || 0} cards completed
                           </p>
                         </div>
                         
                         {/* Members and Activity */}
                         <div className="flex items-center justify-between">
                           <AvatarGroup
-                            avatars={board.members}
+                            avatars={board.members || []}
                             max={3}
                             size="sm"
                           />
                           <span className="text-xs text-gray-500">
-                            {board.lastActivity}
+                            {board.lastActivity || 'No activity yet'}
                           </span>
                         </div>
                       </div>
@@ -201,7 +358,7 @@ const BoardsPage: React.FC = () => {
                   <Button
                     icon={<PlusIcon className="w-5 h-5" />}
                     className="bg-grape-600 hover:bg-grape-700"
-                    onClick={handleCreateBoard}
+                    onClick={() => setShowCreateForm(true)}
                     disabled={loading}
                   >
                     Create Your First Board
@@ -216,12 +373,30 @@ const BoardsPage: React.FC = () => {
                   <Card clickable hover className="h-full">
                     <CardHeader>
                       <div className="flex items-start justify-between">
-                        <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', board.color)}>
+                        <div 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center"
+                          style={{ backgroundColor: board.color }}
+                        >
                           <RectangleStackIcon className="w-5 h-5 text-white" />
                         </div>
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <EllipsisHorizontalIcon className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center space-x-1">
+                          <button 
+                            onClick={(e) => handleToggleStar(board.id, board.is_starred || false, e)}
+                            className="text-gray-400 hover:text-yellow-500"
+                          >
+                            {board.is_starred ? (
+                              <StarIconSolid className="w-4 h-4 text-yellow-500" />
+                            ) : (
+                              <StarIcon className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button 
+                            onClick={(e) => handleDeleteBoard(board.id, e)}
+                            className="text-gray-400 hover:text-red-500"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                       
                       <h3 className="text-lg font-semibold text-gray-900 mt-3">
@@ -239,31 +414,31 @@ const BoardsPage: React.FC = () => {
                           <div className="flex items-center justify-between text-sm mb-1">
                             <span className="text-gray-600">Progress</span>
                             <span className="font-medium">
-                              {getCompletionPercentage(board.completedCards, board.totalCards)}%
+                              {getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%
                             </span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
                               className="bg-grape-500 h-2 rounded-full transition-all"
                               style={{
-                                width: `${getCompletionPercentage(board.completedCards, board.totalCards)}%`
+                                width: `${getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%`
                               }}
                             />
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            {board.completedCards} of {board.totalCards} cards completed
+                            {board.completedCards || 0} of {board.totalCards || 0} cards completed
                           </p>
                         </div>
                         
                         {/* Members and Activity */}
                         <div className="flex items-center justify-between">
                           <AvatarGroup
-                            avatars={board.members}
+                            avatars={board.members || []}
                             max={3}
                             size="sm"
                           />
                           <span className="text-xs text-gray-500">
-                            {board.lastActivity}
+                            {board.lastActivity || 'No activity yet'}
                           </span>
                         </div>
                       </div>

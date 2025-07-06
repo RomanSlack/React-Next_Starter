@@ -163,8 +163,8 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({
     loose: '-ml-4',
   };
   
-  const visibleAvatars = avatars.slice(0, max);
-  const remainingCount = avatars.length - max;
+  const visibleAvatars = (avatars || []).slice(0, max);
+  const remainingCount = (avatars || []).length - max;
   
   return (
     <div className={cn('flex items-center', className)}>

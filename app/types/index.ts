@@ -56,13 +56,17 @@ export interface Board {
   title: string;
   description?: string;
   color: string;
-  background_image?: string;
   user_id: string;
   is_archived: boolean;
-  is_public: boolean;
+  is_starred?: boolean;
+  settings?: Record<string, any>;
   created_at: string;
   updated_at: string;
-  lists: BoardList[];
+  // UI-specific fields (may not come from API)
+  completedCards?: number;
+  totalCards?: number;
+  members?: any[];
+  lastActivity?: string;
 }
 
 export interface BoardList {
@@ -80,13 +84,11 @@ export interface Card {
   title: string;
   description?: string;
   position: number;
-  due_date?: string;
-  labels: Label[];
-  checklist: ChecklistItem[];
-  attachments: Attachment[];
-  comments: Comment[];
-  list_id: string;
-  assigned_to?: string;
+  status: string;
+  priority: string;
+  board_id: string;
+  card_metadata?: Record<string, any>;
+  completed_at?: string;
   created_at: string;
   updated_at: string;
 }
@@ -213,13 +215,13 @@ export interface APIError {
 }
 
 export interface PaginatedResponse<T> {
-  data: T[];
+  items: T[];
   total: number;
   page: number;
-  per_page: number;
+  size: number;
   total_pages: number;
   has_next: boolean;
-  has_prev: boolean;
+  has_previous: boolean;
 }
 
 export interface SearchFilters {
