@@ -155,15 +155,6 @@ const LoginPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        
-        {/* Demo credentials */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</h3>
-          <p className="text-xs text-blue-700">
-            Email: demo@skema.app<br />
-            Password: demo123456
-          </p>
-        </div>
       </div>
     </div>
   );

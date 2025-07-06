@@ -22,39 +22,20 @@ import { cn } from '@/lib/utils';
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
   
-  // Mock data - this would come from APIs
+  // Real data that would come from APIs - currently empty/zero for production
   const stats = {
-    totalBoards: 12,
-    totalCards: 84,
-    completedCards: 67,
-    upcomingEvents: 5,
-    journalEntries: 23,
-    productivityScore: 87,
+    totalBoards: 0,
+    totalCards: 0,
+    completedCards: 0,
+    upcomingEvents: 0,
+    journalEntries: 0,
+    productivityScore: 0,
   };
   
-  const recentBoards = [
-    { id: '1', title: 'Website Redesign', color: 'bg-blue-500', members: 4 },
-    { id: '2', title: 'Marketing Campaign', color: 'bg-green-500', members: 3 },
-    { id: '3', title: 'Product Launch', color: 'bg-purple-500', members: 6 },
-  ];
-  
-  const upcomingTasks = [
-    { id: '1', title: 'Review design mockups', dueDate: '2024-01-15', board: 'Website Redesign' },
-    { id: '2', title: 'Prepare presentation', dueDate: '2024-01-16', board: 'Marketing Campaign' },
-    { id: '3', title: 'Test new features', dueDate: '2024-01-17', board: 'Product Launch' },
-  ];
-  
-  const upcomingEvents = [
-    { id: '1', title: 'Team Meeting', date: '2024-01-15', time: '10:00 AM' },
-    { id: '2', title: 'Client Call', date: '2024-01-16', time: '2:00 PM' },
-    { id: '3', title: 'Project Review', date: '2024-01-17', time: '3:30 PM' },
-  ];
-  
-  const recentJournalEntries = [
-    { id: '1', title: 'Productive Monday', date: '2024-01-14', mood: 'great' },
-    { id: '2', title: 'Learning New Technologies', date: '2024-01-13', mood: 'good' },
-    { id: '3', title: 'Weekend Reflections', date: '2024-01-12', mood: 'okay' },
-  ];
+  const recentBoards: any[] = [];
+  const upcomingTasks: any[] = [];
+  const upcomingEvents: any[] = [];
+  const recentJournalEntries: any[] = [];
   
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -74,7 +55,7 @@ const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user?.first_name || 'User'}!
+              Welcome back, {user?.first_name || 'there'}!
             </h1>
             <p className="mt-1 text-lg text-gray-600">
               Here's what's happening with your projects today.
@@ -172,30 +153,44 @@ const DashboardPage: React.FC = () => {
             />
             <CardContent>
               <div className="space-y-4">
-                {recentBoards.map((board) => (
-                  <div
-                    key={board.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', board.color)}>
-                        <RectangleStackIcon className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">{board.title}</h3>
-                        <p className="text-sm text-gray-500">{board.members} members</p>
-                      </div>
-                    </div>
-                    
-                    <AvatarGroup
-                      avatars={Array.from({ length: board.members }, (_, i) => ({
-                        name: `User ${i + 1}`,
-                      }))}
-                      max={3}
+                {recentBoards.length === 0 ? (
+                  <div className="text-center py-8">
+                    <RectangleStackIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">No boards yet</p>
+                    <p className="text-sm text-gray-400">Create your first board to get started</p>
+                    <Button 
+                      className="mt-4 bg-grape-600 hover:bg-grape-700"
                       size="sm"
-                    />
+                    >
+                      Create Board
+                    </Button>
                   </div>
-                ))}
+                ) : (
+                  recentBoards.map((board) => (
+                    <div
+                      key={board.id}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', board.color)}>
+                          <RectangleStackIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-gray-900">{board.title}</h3>
+                          <p className="text-sm text-gray-500">{board.members} members</p>
+                        </div>
+                      </div>
+                      
+                      <AvatarGroup
+                        avatars={Array.from({ length: board.members }, (_, i) => ({
+                          name: `User ${i + 1}`,
+                        }))}
+                        max={3}
+                        size="sm"
+                      />
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -212,21 +207,29 @@ const DashboardPage: React.FC = () => {
             />
             <CardContent>
               <div className="space-y-3">
-                {upcomingTasks.map((task) => (
-                  <div key={task.id} className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-gray-200 rounded border-2 border-gray-300 flex-shrink-0 mt-0.5"></div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {task.title}
-                      </p>
-                      <p className="text-xs text-gray-500">{task.board}</p>
-                      <p className="text-xs text-gray-400 mt-1 flex items-center">
-                        <ClockIcon className="w-3 h-3 mr-1" />
-                        {task.dueDate}
-                      </p>
-                    </div>
+                {upcomingTasks.length === 0 ? (
+                  <div className="text-center py-8">
+                    <ClockIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">No upcoming tasks</p>
+                    <p className="text-sm text-gray-400">Create boards and add cards to see tasks here</p>
                   </div>
-                ))}
+                ) : (
+                  upcomingTasks.map((task) => (
+                    <div key={task.id} className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-gray-200 rounded border-2 border-gray-300 flex-shrink-0 mt-0.5"></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {task.title}
+                        </p>
+                        <p className="text-xs text-gray-500">{task.board}</p>
+                        <p className="text-xs text-gray-400 mt-1 flex items-center">
+                          <ClockIcon className="w-3 h-3 mr-1" />
+                          {task.dueDate}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -246,19 +249,27 @@ const DashboardPage: React.FC = () => {
             />
             <CardContent>
               <div className="space-y-4">
-                {upcomingEvents.map((event) => (
-                  <div key={event.id} className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-grape-500 rounded-full flex-shrink-0"></div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {event.title}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {event.date} at {event.time}
-                      </p>
-                    </div>
+                {upcomingEvents.length === 0 ? (
+                  <div className="text-center py-8">
+                    <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">No upcoming events</p>
+                    <p className="text-sm text-gray-400">Schedule events to see them here</p>
                   </div>
-                ))}
+                ) : (
+                  upcomingEvents.map((event) => (
+                    <div key={event.id} className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-grape-500 rounded-full flex-shrink-0"></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {event.title}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {event.date} at {event.time}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -275,17 +286,25 @@ const DashboardPage: React.FC = () => {
             />
             <CardContent>
               <div className="space-y-4">
-                {recentJournalEntries.map((entry) => (
-                  <div key={entry.id} className="flex items-center space-x-3">
-                    <div className={cn('w-3 h-3 rounded-full flex-shrink-0', getMoodColor(entry.mood))}></div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {entry.title}
-                      </p>
-                      <p className="text-xs text-gray-500">{entry.date}</p>
-                    </div>
+                {recentJournalEntries.length === 0 ? (
+                  <div className="text-center py-8">
+                    <BookOpenIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">No journal entries</p>
+                    <p className="text-sm text-gray-400">Start journaling to track your thoughts and mood</p>
                   </div>
-                ))}
+                ) : (
+                  recentJournalEntries.map((entry) => (
+                    <div key={entry.id} className="flex items-center space-x-3">
+                      <div className={cn('w-3 h-3 rounded-full flex-shrink-0', getMoodColor(entry.mood))}></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {entry.title}
+                        </p>
+                        <p className="text-xs text-gray-500">{entry.date}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
