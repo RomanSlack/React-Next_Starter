@@ -37,6 +37,7 @@ const RegisterPage: React.FC = () => {
   });
   
   const onSubmit = async (data: RegisterFormData) => {
+    console.log('Form submitted with data:', data);
     try {
       await registerUser({
         email: data.email,
@@ -47,6 +48,7 @@ const RegisterPage: React.FC = () => {
       });
       router.push('/dashboard');
     } catch (error: any) {
+      console.error('Registration error:', error);
       setError('root', {
         message: error.message || 'Registration failed. Please try again.',
       });

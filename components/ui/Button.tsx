@@ -6,10 +6,11 @@ export interface ButtonProps
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   loading?: boolean;
+  fullWidth?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size = 'default', loading, children, disabled, ...props }, ref) => {
+  ({ className, variant = 'default', size = 'default', loading, fullWidth = false, children, disabled, ...props }, ref) => {
     const baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
     
     const variants = {
@@ -34,6 +35,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           baseStyles,
           variants[variant],
           sizes[size],
+          fullWidth && 'w-full',
           className
         )}
         ref={ref}
