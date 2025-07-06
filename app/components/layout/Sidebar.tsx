@@ -73,7 +73,13 @@ const Sidebar: React.FC = () => {
           </motion.div>
           
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => {
+              setSidebarOpen(!actualSidebarOpen);
+              // Force hydration on first click if not hydrated
+              if (!hasHydrated) {
+                useAppStore.setState({ hasHydrated: true });
+              }
+            }}
             className="p-1 rounded-md hover:bg-gray-100 transition-colors"
           >
             {actualSidebarOpen ? (
