@@ -18,45 +18,8 @@ const JournalPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   
-  // Mock entries
-  const entries = [
-    {
-      id: '1',
-      title: 'Productive Monday',
-      content: 'Had a great start to the week. Completed the design mockups and got positive feedback from the team. Feeling motivated for the rest of the week.',
-      date: '2024-01-15',
-      mood: 'great',
-      tags: ['work', 'productivity', 'design'],
-      weather: 'sunny',
-    },
-    {
-      id: '2',
-      title: 'Learning New Technologies',
-      content: 'Spent the day learning React 19 and Next.js 15. The new features are amazing, especially the server components. Can\'t wait to implement them in our projects.',
-      date: '2024-01-14',
-      mood: 'good',
-      tags: ['learning', 'tech', 'react'],
-      weather: 'cloudy',
-    },
-    {
-      id: '3',
-      title: 'Weekend Reflections',
-      content: 'Spent quality time with family this weekend. Went hiking and had a great barbecue. These moments remind me what\'s truly important in life.',
-      date: '2024-01-13',
-      mood: 'great',
-      tags: ['family', 'weekend', 'nature'],
-      weather: 'sunny',
-    },
-    {
-      id: '4',
-      title: 'Challenging Day',
-      content: 'Faced some difficult technical challenges today. The database migration didn\'t go as planned, but we managed to solve it by the end of the day.',
-      date: '2024-01-12',
-      mood: 'okay',
-      tags: ['work', 'challenges', 'database'],
-      weather: 'rainy',
-    },
-  ];
+  // Real data - empty for production ready state
+  const entries: any[] = [];
   
   const moods = [
     { value: 'great', label: 'Great', icon: '😄', color: 'bg-green-500' },
@@ -82,9 +45,9 @@ const JournalPage: React.FC = () => {
   
   const stats = {
     totalEntries: entries.length,
-    streak: 7, // Days in a row
-    averageMood: 4.2,
-    thisWeek: 3,
+    streak: 0, // Days in a row
+    averageMood: 0,
+    thisWeek: 0,
   };
   
   return (
@@ -240,7 +203,27 @@ const JournalPage: React.FC = () => {
             );
           })}
           
-          {filteredEntries.length === 0 && (
+          {entries.length === 0 ? (
+            <Card>
+              <CardContent padding="xl">
+                <div className="text-center py-12">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span className="text-4xl">📖</span>
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-900 mb-2">Start your journaling journey</h3>
+                  <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                    Capture your thoughts, track your mood, and reflect on your experiences. Your first entry is just a click away.
+                  </p>
+                  <Button
+                    icon={<PlusIcon className="w-5 h-5" />}
+                    className="bg-grape-600 hover:bg-grape-700"
+                  >
+                    Write Your First Entry
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : filteredEntries.length === 0 ? (
             <Card>
               <CardContent padding="xl">
                 <div className="text-center text-gray-500">
@@ -249,7 +232,7 @@ const JournalPage: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-          )}
+          ) : null}
         </div>
       </div>
     </AppLayout>

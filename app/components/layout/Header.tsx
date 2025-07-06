@@ -142,7 +142,7 @@ const Header: React.FC = () => {
           <div className="relative group">
             <Avatar
               src={user?.avatar_url}
-              name={user ? `${user.first_name} ${user.last_name}` : 'User'}
+              name={user?.full_name || 'User'}
               size="sm"
               className="cursor-pointer"
             />
@@ -152,7 +152,7 @@ const Header: React.FC = () => {
               <div className="py-1">
                 <div className="px-3 py-2 border-b border-gray-100">
                   <p className="text-sm font-medium text-gray-900">
-                    {user ? `${user.first_name} ${user.last_name}` : 'User'}
+                    {user?.full_name || 'User'}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     {user?.email || 'Loading...'}
@@ -160,7 +160,7 @@ const Header: React.FC = () => {
                 </div>
                 
                 <button
-                  onClick={() => router.push('/settings/profile')}
+                  onClick={() => router.push('/settings')}
                   className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Profile Settings

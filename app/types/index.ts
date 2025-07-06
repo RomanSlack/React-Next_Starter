@@ -1,14 +1,15 @@
 export interface User {
   id: string;
   email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
+  username?: string;
+  full_name: string;
   avatar_url?: string;
-  is_verified: boolean;
-  preferences: UserPreferences;
+  is_active: boolean;
+  email_verified: boolean;
+  preferences: Record<string, any>;
   created_at: string;
   updated_at: string;
+  last_login_at?: string;
 }
 
 export interface UserPreferences {

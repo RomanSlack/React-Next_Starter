@@ -55,7 +55,7 @@ const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user?.first_name || 'there'}!
+              Welcome back, {user?.full_name?.split(' ')[0] || 'there'}!
             </h1>
             <p className="mt-1 text-lg text-gray-600">
               Here's what's happening with your projects today.
