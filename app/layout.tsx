@@ -8,6 +8,7 @@ import Favicon from "./components/Favicon";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'),
   title: "Skema - Your Ultimate Productivity Companion",
   description: "Organize tasks, manage schedules, and unlock your potential with AI-powered assistance. Features Kanban boards, calendar, journal, and intelligent command bar.",
   keywords: ["productivity", "task management", "kanban", "calendar", "journal", "AI assistant"],
@@ -18,11 +19,6 @@ export const metadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
   },
   robots: {
     index: true,
