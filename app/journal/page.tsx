@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
 import { Button } from '@/app/components/ui/Button';
@@ -31,6 +31,7 @@ import { JournalEntry } from '@/types';
 
 const JournalPage: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -41,6 +42,7 @@ const JournalPage: React.FC = () => {
   const [stats, setStats] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [highlightedEntry, setHighlightedEntry] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
   const [entryForm, setEntryForm] = useState({
@@ -57,6 +59,26 @@ const JournalPage: React.FC = () => {
     fetchEntries();
     fetchStats();
   }, [searchQuery, selectedMood]);
+
+  // Handle deep linking from search results
+  useEffect(() => {
+    const entryId = searchParams.get('entry');
+    if (entryId) {
+      setHighlightedEntry(entryId);
+      // Scroll to the entry after a short delay to ensure it's rendered
+      setTimeout(() => {
+        const element = document.getElementById(`journal-entry-${entryId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedEntry(null);
+      }, 3000);
+    }
+  }, [searchParams]);
 
   const fetchEntries = async () => {
     try {
@@ -726,7 +748,15 @@ ${entry.content}
             });
             
             return (
-              <Card key={entry.id} hover>
+              <Card 
+                key={entry.id} 
+                id={`journal-entry-${entry.id}`}
+                hover
+                className={cn(
+                  'transition-all duration-500',
+                  highlightedEntry === entry.id && 'ring-2 ring-grape-500 bg-grape-50'
+                )}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
