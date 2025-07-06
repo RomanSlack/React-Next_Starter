@@ -87,7 +87,7 @@ export interface Card {
   status: string;
   priority: string;
   board_id: string;
-  card_metadata?: Record<string, any>;
+  metadata?: Record<string, any>;
   completed_at?: string;
   created_at: string;
   updated_at: string;

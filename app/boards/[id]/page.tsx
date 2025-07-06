@@ -269,28 +269,37 @@ const BoardDetailPage: React.FC = () => {
                 style={{ backgroundColor: board.color }}
               />
               {editingBoard ? (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={editForm.title}
-                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                    className="text-3xl font-bold bg-transparent border-b-2 border-grape-300 focus:border-grape-500 outline-none"
-                    autoFocus
-                  />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    icon={<CheckIcon className="w-4 h-4" />}
-                    onClick={() => handleUpdateBoard(editForm)}
-                  />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    icon={<XMarkIcon className="w-4 h-4" />}
-                    onClick={() => {
-                      setEditingBoard(false);
-                      setEditForm({ title: board.title, description: board.description || '' });
-                    }}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={editForm.title}
+                      onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                      className="text-3xl font-bold bg-transparent border-b-2 border-grape-300 focus:border-grape-500 outline-none"
+                      autoFocus
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      icon={<CheckIcon className="w-4 h-4" />}
+                      onClick={() => handleUpdateBoard(editForm)}
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      icon={<XMarkIcon className="w-4 h-4" />}
+                      onClick={() => {
+                        setEditingBoard(false);
+                        setEditForm({ title: board.title, description: board.description || '' });
+                      }}
+                    />
+                  </div>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    placeholder="Board description"
+                    className="w-full p-2 text-gray-600 bg-transparent border border-gray-300 rounded focus:border-grape-500 outline-none resize-none"
+                    rows={2}
                   />
                 </div>
               ) : (
