@@ -1,0 +1,21 @@
+{
+  "name": "Skema - Your Ultimate Productivity Companion",
+  "short_name": "Skema",
+  "description": "Organize tasks, manage schedules, and unlock your potential with AI-powered assistance. Features Kanban boards, calendar, journal, and intelligent command bar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "en-US",
+  "scope": "/",
+  "id": "skema-app"
+}

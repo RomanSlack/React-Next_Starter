@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -25,6 +25,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     disabled,
     ...props
   }, ref) => {
+    // Remove custom props from inputProps to avoid passing them to DOM
+    const inputProps = props;
     const baseStyles = 'block w-full px-3 py-2 text-sm placeholder-gray-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed';
     
     const variants = {
@@ -55,7 +57,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         
         <div className="relative">
           {icon && iconPosition === 'left' && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
               <span className="text-gray-400 sm:text-sm">{icon}</span>
             </div>
           )}
@@ -65,11 +67,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             className={inputClasses}
             disabled={disabled}
-            {...props}
+            {...inputProps}
           />
           
           {icon && iconPosition === 'right' && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <span className="text-gray-400 sm:text-sm">{icon}</span>
             </div>
           )}
