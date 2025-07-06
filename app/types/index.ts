@@ -155,11 +155,14 @@ export interface EventReminder {
 
 export interface JournalEntry {
   id: string;
-  title: string;
+  title?: string;
   content: string;
-  mood?: 'great' | 'good' | 'okay' | 'bad' | 'terrible';
+  mood?: 'great' | 'good' | 'okay' | 'bad' | 'terrible' | 'happy' | 'sad' | 'excited' | 'calm' | 'anxious' | 'angry' | 'grateful' | 'hopeful' | 'frustrated' | 'content' | 'stressed' | 'other';
   tags: string[];
+  metadata?: Record<string, any>;
+  entry_date: string;
   is_private: boolean;
+  is_favorite: boolean;
   weather?: string;
   location?: string;
   user_id: string;
