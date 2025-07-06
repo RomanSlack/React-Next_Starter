@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
 import { Button } from '@/app/components/ui/Button';
@@ -11,46 +11,65 @@ import {
   CalendarIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
+import { calendarAPI } from '@/app/lib/api/calendar';
+import { CalendarEvent } from '@/types';
 
 const CalendarPage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'day'>('month');
-  
-  // Mock events
-  const events = [
-    {
-      id: '1',
-      title: 'Team Meeting',
-      date: '2024-01-15',
-      time: '10:00 AM',
-      duration: '1h',
-      color: 'bg-blue-500',
-    },
-    {
-      id: '2',
-      title: 'Client Call',
-      date: '2024-01-16',
-      time: '2:00 PM',
-      duration: '30m',
-      color: 'bg-green-500',
-    },
-    {
-      id: '3',
-      title: 'Project Review',
-      date: '2024-01-17',
-      time: '3:30 PM',
-      duration: '2h',
-      color: 'bg-purple-500',
-    },
-    {
-      id: '4',
-      title: 'Design Workshop',
-      date: '2024-01-18',
-      time: '9:00 AM',
-      duration: '3h',
-      color: 'bg-orange-500',
-    },
-  ];
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [currentDate]);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Get events for the current month
+      const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      
+      const response = await calendarAPI.getEvents(
+        1, 100, 
+        startOfMonth.toISOString(), 
+        endOfMonth.toISOString()
+      );
+      setEvents(response.items || []);
+    } catch (err) {
+      console.error('Failed to fetch events:', err);
+      setError('Failed to load events');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateEvent = async () => {
+    try {
+      const now = new Date();
+      const eventStart = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+      const eventEnd = new Date(eventStart.getTime() + 60 * 60 * 1000); // 1 hour duration
+      
+      const newEvent = await calendarAPI.createEvent({
+        title: 'New Event',
+        description: 'Add details for your event',
+        start_datetime: eventStart.toISOString(),
+        end_datetime: eventEnd.toISOString(),
+        color: 'bg-blue-500',
+        is_all_day: false,
+        is_recurring: false
+      });
+      
+      setEvents([...events, newEvent]);
+    } catch (err) {
+      console.error('Failed to create event:', err);
+      setError('Failed to create event');
+    }
+  };
   
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -104,13 +123,21 @@ const CalendarPage: React.FC = () => {
   };
   
   const hasEvent = (day: number) => {
-    const dateStr = `2024-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return events.some(event => event.date === dateStr);
+    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return events.some(event => {
+      const eventDate = new Date(event.start_datetime);
+      const eventDateStr = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}-${String(eventDate.getDate()).padStart(2, '0')}`;
+      return eventDateStr === dateStr;
+    });
   };
   
   const getEventsForDay = (day: number) => {
-    const dateStr = `2024-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return events.filter(event => event.date === dateStr);
+    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return events.filter(event => {
+      const eventDate = new Date(event.start_datetime);
+      const eventDateStr = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}-${String(eventDate.getDate()).padStart(2, '0')}`;
+      return eventDateStr === dateStr;
+    });
   };
   
   const days = getDaysInMonth(currentDate);
@@ -130,6 +157,8 @@ const CalendarPage: React.FC = () => {
           <Button
             icon={<PlusIcon className="w-5 h-5" />}
             className="bg-grape-600 hover:bg-grape-700"
+            onClick={handleCreateEvent}
+            disabled={loading}
           >
             Add Event
           </Button>
@@ -218,17 +247,21 @@ const CalendarPage: React.FC = () => {
                         
                         {/* Events */}
                         <div className="mt-1 space-y-1">
-                          {getEventsForDay(day).slice(0, 3).map((event) => (
-                            <div
-                              key={event.id}
-                              className={cn(
-                                'text-xs px-2 py-1 rounded text-white truncate',
-                                event.color
-                              )}
-                            >
-                              {event.time} {event.title}
-                            </div>
-                          ))}
+                          {getEventsForDay(day).slice(0, 3).map((event) => {
+                            const eventDate = new Date(event.start_datetime);
+                            const timeStr = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            return (
+                              <div
+                                key={event.id}
+                                className={cn(
+                                  'text-xs px-2 py-1 rounded text-white truncate',
+                                  event.color || 'bg-blue-500'
+                                )}
+                              >
+                                {timeStr} {event.title}
+                              </div>
+                            );
+                          })}
                           {getEventsForDay(day).length > 3 && (
                             <div className="text-xs text-gray-500">
                               +{getEventsForDay(day).length - 3} more
@@ -249,20 +282,37 @@ const CalendarPage: React.FC = () => {
           <CardHeader title="Upcoming Events" />
           <CardContent>
             <div className="space-y-4">
-              {events.slice(0, 5).map((event) => (
-                <div key={event.id} className="flex items-center space-x-4">
-                  <div className={cn('w-3 h-3 rounded-full', event.color)} />
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{event.title}</h3>
-                    <p className="text-sm text-gray-500">
-                      {event.date} at {event.time} • {event.duration}
-                    </p>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    Edit
-                  </Button>
+              {events.length === 0 ? (
+                <div className="text-center py-8">
+                  <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">No upcoming events</p>
+                  <p className="text-sm text-gray-400">Create your first event to get started</p>
                 </div>
-              ))}
+              ) : (
+                events.slice(0, 5).map((event) => {
+                  const eventDate = new Date(event.start_datetime);
+                  const dateStr = eventDate.toLocaleDateString();
+                  const timeStr = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  const endDate = new Date(event.end_datetime);
+                  const duration = Math.round((endDate.getTime() - eventDate.getTime()) / (1000 * 60));
+                  const durationStr = duration >= 60 ? `${Math.floor(duration / 60)}h` : `${duration}m`;
+                  
+                  return (
+                    <div key={event.id} className="flex items-center space-x-4">
+                      <div className={cn('w-3 h-3 rounded-full', event.color || 'bg-blue-500')} />
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-900">{event.title}</h3>
+                        <p className="text-sm text-gray-500">
+                          {dateStr} at {timeStr} • {durationStr}
+                        </p>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        Edit
+                      </Button>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </CardContent>
         </Card>

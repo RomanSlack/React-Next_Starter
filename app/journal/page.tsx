@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
 import { Button } from '@/app/components/ui/Button';
@@ -13,13 +13,71 @@ import {
   FaceFrownIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
+import { journalAPI } from '@/app/lib/api/journal';
+import { JournalEntry } from '@/types';
 
 const JournalPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  
-  // Real data - empty for production ready state
-  const entries: any[] = [];
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [stats, setStats] = useState<any>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchEntries();
+    fetchStats();
+  }, [searchQuery, selectedMood]);
+
+  const fetchEntries = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await journalAPI.getEntries(
+        1, 20, 
+        undefined, 
+        undefined, 
+        selectedMood || undefined,
+        undefined,
+        undefined,
+        searchQuery || undefined
+      );
+      setEntries(response.items || []);
+    } catch (err) {
+      console.error('Failed to fetch entries:', err);
+      setError('Failed to load journal entries');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const statsData = await journalAPI.getStats();
+      setStats(statsData);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    }
+  };
+
+  const handleCreateEntry = async () => {
+    try {
+      const newEntry = await journalAPI.createEntry({
+        title: 'New Journal Entry',
+        content: 'Start writing your thoughts...',
+        mood: 'okay',
+        tags: [],
+        is_private: false,
+        is_favorite: false
+      });
+      
+      setEntries([newEntry, ...entries]);
+    } catch (err) {
+      console.error('Failed to create entry:', err);
+      setError('Failed to create journal entry');
+    }
+  };
   
   const moods = [
     { value: 'great', label: 'Great', icon: '😄', color: 'bg-green-500' },
@@ -36,19 +94,12 @@ const JournalPage: React.FC = () => {
   const filteredEntries = entries.filter(entry => {
     const matchesSearch = entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          entry.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         entry.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+                         (entry.tags && entry.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())));
     
     const matchesMood = !selectedMood || entry.mood === selectedMood;
     
     return matchesSearch && matchesMood;
   });
-  
-  const stats = {
-    totalEntries: entries.length,
-    streak: 0, // Days in a row
-    averageMood: 0,
-    thisWeek: 0,
-  };
   
   return (
     <AppLayout>
@@ -65,6 +116,8 @@ const JournalPage: React.FC = () => {
           <Button
             icon={<PlusIcon className="w-5 h-5" />}
             className="bg-grape-600 hover:bg-grape-700"
+            onClick={handleCreateEntry}
+            disabled={loading}
           >
             New Entry
           </Button>
@@ -75,7 +128,7 @@ const JournalPage: React.FC = () => {
           <Card>
             <CardContent padding="lg">
               <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">{stats.totalEntries}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.total_entries || 0}</p>
                 <p className="text-sm text-gray-600">Total Entries</p>
               </div>
             </CardContent>
@@ -84,7 +137,7 @@ const JournalPage: React.FC = () => {
           <Card>
             <CardContent padding="lg">
               <div className="text-center">
-                <p className="text-2xl font-bold text-orange-600">{stats.streak}</p>
+                <p className="text-2xl font-bold text-orange-600">{stats.streak_days || 0}</p>
                 <p className="text-sm text-gray-600">Day Streak</p>
               </div>
             </CardContent>
@@ -93,8 +146,8 @@ const JournalPage: React.FC = () => {
           <Card>
             <CardContent padding="lg">
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{stats.averageMood}</p>
-                <p className="text-sm text-gray-600">Average Mood</p>
+                <p className="text-2xl font-bold text-green-600">{stats.average_words_per_entry || 0}</p>
+                <p className="text-sm text-gray-600">Avg Words</p>
               </div>
             </CardContent>
           </Card>
@@ -102,7 +155,7 @@ const JournalPage: React.FC = () => {
           <Card>
             <CardContent padding="lg">
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{stats.thisWeek}</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.entries_this_week || 0}</p>
                 <p className="text-sm text-gray-600">This Week</p>
               </div>
             </CardContent>
@@ -217,6 +270,8 @@ const JournalPage: React.FC = () => {
                   <Button
                     icon={<PlusIcon className="w-5 h-5" />}
                     className="bg-grape-600 hover:bg-grape-700"
+                    onClick={handleCreateEntry}
+                    disabled={loading}
                   >
                     Write Your First Entry
                   </Button>

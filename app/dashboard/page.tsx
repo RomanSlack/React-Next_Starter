@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
 import { Button } from '@/app/components/ui/Button';
@@ -18,24 +19,101 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/lib/stores/auth';
 import { cn } from '@/lib/utils';
+import { boardsAPI } from '@/app/lib/api/boards';
+import { calendarAPI } from '@/app/lib/api/calendar';
+import { journalAPI } from '@/app/lib/api/journal';
+import { Board, CalendarEvent, JournalEntry } from '@/types';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
+  const router = useRouter();
   
-  // Real data that would come from APIs - currently empty/zero for production
-  const stats = {
+  const [stats, setStats] = useState({
     totalBoards: 0,
     totalCards: 0,
     completedCards: 0,
     upcomingEvents: 0,
     journalEntries: 0,
     productivityScore: 0,
-  };
+  });
   
-  const recentBoards: any[] = [];
-  const upcomingTasks: any[] = [];
-  const upcomingEvents: any[] = [];
-  const recentJournalEntries: any[] = [];
+  const [recentBoards, setRecentBoards] = useState<Board[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<CalendarEvent[]>([]);
+  const [recentJournalEntries, setRecentJournalEntries] = useState<JournalEntry[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch all data in parallel
+      const [boardsResponse, eventsResponse, journalResponse, journalStatsResponse] = await Promise.allSettled([
+        boardsAPI.getBoards(1, 5),
+        calendarAPI.getUpcomingEvents(5),
+        journalAPI.getEntries(1, 5),
+        journalAPI.getStats()
+      ]);
+
+      // Process boards data
+      if (boardsResponse.status === 'fulfilled') {
+        const boards = boardsResponse.value.items || [];
+        setRecentBoards(boards);
+        setStats(prev => ({ ...prev, totalBoards: boards.length }));
+      }
+
+      // Process events data
+      if (eventsResponse.status === 'fulfilled') {
+        const events = eventsResponse.value || [];
+        setUpcomingEvents(events);
+        setStats(prev => ({ ...prev, upcomingEvents: events.length }));
+      }
+
+      // Process journal data
+      if (journalResponse.status === 'fulfilled') {
+        const entries = journalResponse.value.items || [];
+        setRecentJournalEntries(entries);
+      }
+
+      if (journalStatsResponse.status === 'fulfilled') {
+        const journalStats = journalStatsResponse.value;
+        setStats(prev => ({ 
+          ...prev, 
+          journalEntries: journalStats.total_entries || 0,
+          productivityScore: Math.min(100, (journalStats.streak_days || 0) * 10)
+        }));
+      }
+      
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickAdd = () => {
+    // Simple modal or dropdown could be implemented here
+    // For now, redirect to boards page
+    router.push('/boards');
+  };
+
+  const handleCreateBoard = async () => {
+    try {
+      await boardsAPI.createBoard({
+        title: 'New Board',
+        description: 'Add a description for your board',
+        color: 'bg-blue-500'
+      });
+      router.push('/boards');
+    } catch (error) {
+      console.error('Failed to create board:', error);
+    }
+  };
+
+  const upcomingTasks: any[] = []; // This would come from cards API
   
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -66,6 +144,8 @@ const DashboardPage: React.FC = () => {
             <Button
               icon={<PlusIcon className="w-5 h-5" />}
               className="bg-grape-600 hover:bg-grape-700"
+              onClick={handleQuickAdd}
+              disabled={loading}
             >
               Quick Add
             </Button>
@@ -146,7 +226,7 @@ const DashboardPage: React.FC = () => {
             <CardHeader
               title="Recent Boards"
               action={
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/boards')}>
                   View All
                 </Button>
               }
@@ -161,6 +241,8 @@ const DashboardPage: React.FC = () => {
                     <Button 
                       className="mt-4 bg-grape-600 hover:bg-grape-700"
                       size="sm"
+                      onClick={handleCreateBoard}
+                      disabled={loading}
                     >
                       Create Board
                     </Button>
@@ -200,7 +282,7 @@ const DashboardPage: React.FC = () => {
             <CardHeader
               title="Upcoming Tasks"
               action={
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/boards')}>
                   View All
                 </Button>
               }
@@ -242,7 +324,7 @@ const DashboardPage: React.FC = () => {
             <CardHeader
               title="Upcoming Events"
               action={
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/calendar')}>
                   View Calendar
                 </Button>
               }
@@ -256,19 +338,25 @@ const DashboardPage: React.FC = () => {
                     <p className="text-sm text-gray-400">Schedule events to see them here</p>
                   </div>
                 ) : (
-                  upcomingEvents.map((event) => (
-                    <div key={event.id} className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-grape-500 rounded-full flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {event.title}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {event.date} at {event.time}
-                        </p>
+                  upcomingEvents.map((event) => {
+                    const eventDate = new Date(event.start_datetime);
+                    const dateStr = eventDate.toLocaleDateString();
+                    const timeStr = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    return (
+                      <div key={event.id} className="flex items-center space-x-3">
+                        <div className={cn('w-2 h-2 rounded-full flex-shrink-0', event.color || 'bg-grape-500')}></div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {event.title}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {dateStr} at {timeStr}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </CardContent>
@@ -279,7 +367,7 @@ const DashboardPage: React.FC = () => {
             <CardHeader
               title="Recent Journal Entries"
               action={
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/journal')}>
                   View Journal
                 </Button>
               }
@@ -293,17 +381,22 @@ const DashboardPage: React.FC = () => {
                     <p className="text-sm text-gray-400">Start journaling to track your thoughts and mood</p>
                   </div>
                 ) : (
-                  recentJournalEntries.map((entry) => (
-                    <div key={entry.id} className="flex items-center space-x-3">
-                      <div className={cn('w-3 h-3 rounded-full flex-shrink-0', getMoodColor(entry.mood))}></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {entry.title}
-                        </p>
-                        <p className="text-xs text-gray-500">{entry.date}</p>
+                  recentJournalEntries.map((entry) => {
+                    const entryDate = new Date(entry.entry_date || entry.created_at);
+                    const dateStr = entryDate.toLocaleDateString();
+                    
+                    return (
+                      <div key={entry.id} className="flex items-center space-x-3">
+                        <div className={cn('w-3 h-3 rounded-full flex-shrink-0', getMoodColor(entry.mood || 'okay'))}></div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {entry.title}
+                          </p>
+                          <p className="text-xs text-gray-500">{dateStr}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </CardContent>

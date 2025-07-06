@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
@@ -14,13 +14,48 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { cn } from '@/lib/utils';
+import { boardsAPI } from '@/app/lib/api/boards';
+import { Board } from '@/types';
 
 const BoardsPage: React.FC = () => {
-  // Real data - empty for production ready state
-  const boards: any[] = [];
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  const starredBoards = boards.filter(board => board.starred);
-  const recentBoards = boards.filter(board => !board.starred);
+  const starredBoards = boards.filter(board => board.is_starred);
+  const recentBoards = boards.filter(board => !board.is_starred);
+
+  useEffect(() => {
+    fetchBoards();
+  }, []);
+
+  const fetchBoards = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await boardsAPI.getBoards();
+      setBoards(response.items || []);
+    } catch (err) {
+      console.error('Failed to fetch boards:', err);
+      setError('Failed to load boards');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateBoard = async () => {
+    try {
+      const newBoard = await boardsAPI.createBoard({
+        title: 'New Board',
+        description: 'Add a description for your board',
+        color: 'bg-blue-500'
+      });
+      setBoards([...boards, newBoard]);
+    } catch (err) {
+      console.error('Failed to create board:', err);
+      setError('Failed to create board');
+    }
+  };
   
   const getCompletionPercentage = (completed: number, total: number) => {
     return Math.round((completed / total) * 100);
@@ -41,6 +76,8 @@ const BoardsPage: React.FC = () => {
           <Button
             icon={<PlusIcon className="w-5 h-5" />}
             className="bg-grape-600 hover:bg-grape-700"
+            onClick={handleCreateBoard}
+            disabled={loading}
           >
             Create Board
           </Button>
@@ -119,11 +156,40 @@ const BoardsPage: React.FC = () => {
           </section>
         )}
         
+        {/* Error State */}
+        {error && (
+          <Card className="border-red-200 bg-red-50">
+            <CardContent padding="lg">
+              <div className="text-center text-red-600">
+                <p className="font-medium">Error</p>
+                <p className="text-sm">{error}</p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={fetchBoards}
+                >
+                  Try Again
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Recent Boards */}
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Boards</h2>
           
-          {boards.length === 0 ? (
+          {loading ? (
+            <Card>
+              <CardContent padding="xl">
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-grape-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading boards...</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : boards.length === 0 ? (
             <Card>
               <CardContent padding="xl">
                 <div className="text-center py-12">
@@ -135,6 +201,8 @@ const BoardsPage: React.FC = () => {
                   <Button
                     icon={<PlusIcon className="w-5 h-5" />}
                     className="bg-grape-600 hover:bg-grape-700"
+                    onClick={handleCreateBoard}
+                    disabled={loading}
                   >
                     Create Your First Board
                   </Button>
