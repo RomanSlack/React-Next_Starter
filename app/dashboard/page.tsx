@@ -16,6 +16,10 @@ import {
   BookOpenIcon,
   ChartBarIcon,
   TrophyIcon,
+  Squares2X2Icon,
+  ViewColumnsIcon,
+  ListBulletIcon,
+  TableCellsIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/lib/stores/auth';
 import { cn } from '@/lib/utils';
@@ -34,7 +38,6 @@ const DashboardPage: React.FC = () => {
     completedCards: 0,
     upcomingEvents: 0,
     journalEntries: 0,
-    productivityScore: 0,
   });
   
   const [recentBoards, setRecentBoards] = useState<Board[]>([]);
@@ -82,8 +85,7 @@ const DashboardPage: React.FC = () => {
         const journalStats = journalStatsResponse.value;
         setStats(prev => ({ 
           ...prev, 
-          journalEntries: journalStats.total_entries || 0,
-          productivityScore: Math.min(100, (journalStats.streak_days || 0) * 10)
+          journalEntries: journalStats.total_entries || 0
         }));
       }
       
@@ -126,6 +128,17 @@ const DashboardPage: React.FC = () => {
     }
   };
   
+  const getBoardIcon = (index: number) => {
+    const icons = [
+      { icon: Squares2X2Icon, colorClass: 'bg-blue-500' },
+      { icon: ViewColumnsIcon, colorClass: 'bg-purple-500' },
+      { icon: ListBulletIcon, colorClass: 'bg-green-500' },
+      { icon: TableCellsIcon, colorClass: 'bg-orange-500' },
+      { icon: RectangleStackIcon, colorClass: 'bg-pink-500' },
+    ];
+    return icons[index % icons.length];
+  };
+  
   return (
     <AppLayout>
       <div className="p-6 space-y-6">
@@ -153,7 +166,7 @@ const DashboardPage: React.FC = () => {
         </div>
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card>
             <CardContent padding="lg">
               <div className="flex items-center">
@@ -202,21 +215,6 @@ const DashboardPage: React.FC = () => {
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent padding="lg">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <TrophyIcon className="w-5 h-5 text-yellow-600" />
-                  </div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Productivity Score</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.productivityScore}%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
         
         {/* Main Content Grid */}
@@ -248,30 +246,36 @@ const DashboardPage: React.FC = () => {
                     </Button>
                   </div>
                 ) : (
-                  recentBoards.map((board) => (
-                    <div
-                      key={board.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', board.color)}>
-                          <RectangleStackIcon className="w-5 h-5 text-white" />
+                  recentBoards.map((board, index) => {
+                    const boardIcon = getBoardIcon(index);
+                    const IconComponent = boardIcon.icon;
+                    
+                    return (
+                      <div
+                        key={board.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                        onClick={() => router.push(`/boards/${board.id}`)}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', boardIcon.colorClass)}>
+                            <IconComponent className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900">{board.title}</h3>
+                            <p className="text-sm text-gray-500">{board.members} members</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-medium text-gray-900">{board.title}</h3>
-                          <p className="text-sm text-gray-500">{board.members} members</p>
-                        </div>
+                        
+                        <AvatarGroup
+                          avatars={Array.from({ length: board.members }, (_, i) => ({
+                            name: `User ${i + 1}`,
+                          }))}
+                          max={3}
+                          size="sm"
+                        />
                       </div>
-                      
-                      <AvatarGroup
-                        avatars={Array.from({ length: board.members }, (_, i) => ({
-                          name: `User ${i + 1}`,
-                        }))}
-                        max={3}
-                        size="sm"
-                      />
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </CardContent>
