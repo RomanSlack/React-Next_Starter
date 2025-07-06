@@ -28,8 +28,13 @@ const navigation = [
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
-  const { sidebarOpen, setSidebarOpen } = useAppStore();
+  const { sidebarOpen, setSidebarOpen, hasHydrated } = useAppStore();
   const { user } = useAuthStore();
+  
+  // Desktop: default open until hydrated, Mobile: default closed
+  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+  const defaultState = isDesktop;
+  const actualSidebarOpen = hasHydrated ? sidebarOpen : defaultState;
   
   const isActive = (href: string) => {
     if (href === '/dashboard') {
@@ -44,7 +49,7 @@ const Sidebar: React.FC = () => {
       <motion.div
         initial={false}
         animate={{
-          width: sidebarOpen ? 256 : 72,
+          width: actualSidebarOpen ? 256 : 72,
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="hidden md:flex flex-col bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-30"
@@ -54,7 +59,7 @@ const Sidebar: React.FC = () => {
           <motion.div
             initial={false}
             animate={{
-              opacity: sidebarOpen ? 1 : 0,
+              opacity: actualSidebarOpen ? 1 : 0,
             }}
             transition={{ duration: 0.2 }}
             className="flex items-center space-x-2"
@@ -62,7 +67,7 @@ const Sidebar: React.FC = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-grape-500 to-grape-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">S</span>
             </div>
-            {sidebarOpen && (
+            {actualSidebarOpen && (
               <span className="text-xl font-bold text-gray-900">Skema</span>
             )}
           </motion.div>
@@ -71,7 +76,7 @@ const Sidebar: React.FC = () => {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-1 rounded-md hover:bg-gray-100 transition-colors"
           >
-            {sidebarOpen ? (
+            {actualSidebarOpen ? (
               <ChevronLeftIcon className="w-5 h-5 text-gray-500" />
             ) : (
               <ChevronRightIcon className="w-5 h-5 text-gray-500" />
@@ -105,13 +110,13 @@ const Sidebar: React.FC = () => {
                     <motion.span
                       initial={false}
                       animate={{
-                        opacity: sidebarOpen ? 1 : 0,
-                        x: sidebarOpen ? 0 : -10,
+                        opacity: actualSidebarOpen ? 1 : 0,
+                        x: actualSidebarOpen ? 0 : -10,
                       }}
                       transition={{ duration: 0.2 }}
                       className={cn(
                         'ml-3 truncate',
-                        !sidebarOpen && 'sr-only'
+                        !actualSidebarOpen && 'sr-only'
                       )}
                     >
                       {item.name}
@@ -137,26 +142,26 @@ const Sidebar: React.FC = () => {
           <div className="flex items-center space-x-3">
             <Avatar
               src={user?.avatar_url}
-              name={user ? `${user.first_name} ${user.last_name}` : 'User'}
+              name={user?.full_name || 'User'}
               size="md"
             />
             
             <motion.div
               initial={false}
               animate={{
-                opacity: sidebarOpen ? 1 : 0,
+                opacity: actualSidebarOpen ? 1 : 0,
               }}
               transition={{ duration: 0.2 }}
               className={cn(
                 'flex-1 min-w-0',
-                !sidebarOpen && 'sr-only'
+                !actualSidebarOpen && 'sr-only'
               )}
             >
               <p className="text-sm font-medium text-gray-900 truncate">
-                {user ? `${user.first_name} ${user.last_name}` : 'User'}
+                {user?.full_name || 'User'}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {user?.email || 'user@example.com'}
+                {user?.email || 'Loading...'}
               </p>
             </motion.div>
           </div>
@@ -164,7 +169,7 @@ const Sidebar: React.FC = () => {
       </motion.div>
       
       {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
+      {actualSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
@@ -174,7 +179,7 @@ const Sidebar: React.FC = () => {
       {/* Mobile Sidebar */}
       <motion.div
         initial={{ x: -256 }}
-        animate={{ x: sidebarOpen ? 0 : -256 }}
+        animate={{ x: actualSidebarOpen ? 0 : -256 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="md:hidden fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-50 flex flex-col"
       >
@@ -231,16 +236,16 @@ const Sidebar: React.FC = () => {
           <div className="flex items-center space-x-3">
             <Avatar
               src={user?.avatar_url}
-              name={user ? `${user.first_name} ${user.last_name}` : 'User'}
+              name={user?.full_name || 'User'}
               size="md"
             />
             
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                {user ? `${user.first_name} ${user.last_name}` : 'User'}
+                {user?.full_name || 'User'}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {user?.email || 'user@example.com'}
+                {user?.email || 'Loading...'}
               </p>
             </div>
           </div>

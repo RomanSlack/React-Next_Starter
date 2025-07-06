@@ -18,18 +18,32 @@ interface AppLayoutProps {
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children, className }) => {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
-  const { sidebarCollapsed } = useAppStore();
+  const { isAuthenticated, isInitialized } = useAuthStore();
+  const { sidebarOpen } = useAppStore();
   
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!isAuthenticated) {
+    // Only redirect after initialization is complete
+    if (isInitialized && !isAuthenticated) {
       router.push('/auth/login');
       return;
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isInitialized, router]);
   
-  // Don't render anything if not authenticated
+  // Show loading while initializing
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-grape-500 to-grape-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+            <span className="text-white font-bold text-2xl">S</span>
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Don't render anything if not authenticated after initialization
   if (!isAuthenticated) {
     return null;
   }
