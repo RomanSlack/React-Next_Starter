@@ -2,10 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Avatar, AvatarGroup } from '@/components/ui/Avatar';
+import { AppLayout } from '@/app/components/layout/AppLayout';
+import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
+import { Button } from '@/app/components/ui/Button';
+import { Avatar, AvatarGroup } from '@/app/components/ui/Avatar';
 import {
   PlusIcon,
   RectangleStackIcon,
@@ -13,7 +13,7 @@ import {
   EllipsisHorizontalIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 const BoardsPage: React.FC = () => {
   // Mock data

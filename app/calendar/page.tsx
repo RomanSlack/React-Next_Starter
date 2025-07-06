@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { AppLayout } from '@/app/components/layout/AppLayout';
+import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
+import { Button } from '@/app/components/ui/Button';
 import {
   PlusIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CalendarIcon,
 } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 const CalendarPage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());

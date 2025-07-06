@@ -12,10 +12,10 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 import { useAppStore } from '@/lib/stores/app';
 import { useAuthStore } from '@/lib/stores/auth';
-import { Avatar } from '@/components/ui/Avatar';
+import { Avatar } from '@/app/components/ui/Avatar';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },

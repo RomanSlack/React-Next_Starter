@@ -7,8 +7,8 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useAppStore } from '@/lib/stores/app';
-import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils/cn';
+import { Button } from '@/app/components/ui/Button';
+import { cn } from '@/lib/utils';
 
 const CommandBar: React.FC = () => {
   const { commandBarOpen, setCommandBarOpen } = useAppStore();

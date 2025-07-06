@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Avatar } from '@/components/ui/Avatar';
+import { AppLayout } from '@/app/components/layout/AppLayout';
+import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
+import { Button } from '@/app/components/ui/Button';
+import { Input } from '@/app/components/ui/Input';
+import { Avatar } from '@/app/components/ui/Avatar';
 import {
   UserIcon,
   BellIcon,

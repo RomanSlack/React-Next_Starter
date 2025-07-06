@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAppStore, Notification } from '@/lib/stores/app';
 import { Button } from './Button';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 const NotificationContainer: React.FC = () => {
   const { notifications, removeNotification } = useAppStore();

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 interface LoadingProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';

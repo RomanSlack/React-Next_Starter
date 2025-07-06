@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Button } from '@/app/components/ui/Button';
+import { Input } from '@/app/components/ui/Input';
+import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
 import { authAPI } from '@/lib/api/auth';
 import { forgotPasswordSchema } from '@/lib/utils/validation';
 

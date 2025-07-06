@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Avatar, AvatarGroup } from '@/components/ui/Avatar';
-import { Skeleton } from '@/components/ui/Loading';
+import { AppLayout } from '@/app/components/layout/AppLayout';
+import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
+import { Button } from '@/app/components/ui/Button';
+import { Avatar, AvatarGroup } from '@/app/components/ui/Avatar';
+import { Skeleton } from '@/app/components/ui/Loading';
 import {
   PlusIcon,
   CalendarIcon,
@@ -17,7 +17,7 @@ import {
   TrophyIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/lib/stores/auth';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();

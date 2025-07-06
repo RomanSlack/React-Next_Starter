@@ -4,12 +4,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
-import { CommandBar } from '@/components/ai/CommandBar';
-import { NotificationContainer } from '@/components/ui/NotificationContainer';
+import { CommandBar } from '@/app/components/ai/CommandBar';
+import { NotificationContainer } from '@/app/components/ui/NotificationContainer';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useAppStore } from '@/lib/stores/app';
 import { queryClient } from '@/lib/query/client';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -18,31 +18,16 @@ interface AppLayoutProps {
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children, className }) => {
   const router = useRouter();
-  const { isAuthenticated, tokens, getCurrentUser } = useAuthStore();
-  const { sidebarOpen, connectWebSocket, disconnectWebSocket } = useAppStore();
+  const { isAuthenticated } = useAuthStore();
+  const { sidebarCollapsed } = useAppStore();
   
   useEffect(() => {
     // Redirect to login if not authenticated
     if (!isAuthenticated) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
-    
-    // Get current user data
-    getCurrentUser().catch((error) => {
-      console.error('Failed to get current user:', error);
-      router.push('/login');
-    });
-    
-    // Connect WebSocket if we have tokens
-    if (tokens?.access_token) {
-      connectWebSocket(tokens.access_token);
-    }
-    
-    return () => {
-      disconnectWebSocket();
-    };
-  }, [isAuthenticated, tokens, getCurrentUser, connectWebSocket, disconnectWebSocket, router]);
+  }, [isAuthenticated, router]);
   
   // Don't render anything if not authenticated
   if (!isAuthenticated) {

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { AppLayout } from '@/app/components/layout/AppLayout';
+import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
+import { Button } from '@/app/components/ui/Button';
+import { Input } from '@/app/components/ui/Input';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -12,7 +12,7 @@ import {
   FaceSmileIcon,
   FaceFrownIcon,
 } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 const JournalPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');

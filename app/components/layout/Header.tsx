@@ -9,13 +9,13 @@ import {
   MoonIcon,
   ComputerDesktopIcon,
 } from '@heroicons/react/24/outline';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Avatar } from '@/components/ui/Avatar';
+import { Button } from '@/app/components/ui/Button';
+import { Input } from '@/app/components/ui/Input';
+import { Avatar } from '@/app/components/ui/Avatar';
 import { useAppStore } from '@/lib/stores/app';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useThemeStore } from '@/lib/stores/theme';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 const Header: React.FC = () => {
   const router = useRouter();
@@ -60,7 +60,7 @@ const Header: React.FC = () => {
     }
   };
   
-  const unreadNotifications = notifications.filter(n => !n.read).length;
+  const unreadNotifications = (notifications || []).filter(n => !n.read).length;
   
   return (
     <header className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 fixed top-0 right-0 left-0 md:left-64 z-20">
