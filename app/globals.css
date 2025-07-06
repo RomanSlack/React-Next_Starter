@@ -2,3 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --primary-color: 99 102 241; /* indigo-500 */
+    --secondary-color: 107 114 128; /* gray-500 */
+    --accent-color: 168 85 247; /* purple-500 */
+    --paper-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    
+    /* Design system colors */
+    --background: 255 255 255;
+    --foreground: 15 23 42;
+    --muted: 248 250 252;
+    --muted-foreground: 100 116 139;
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --primary: 59 130 246;
+    --primary-foreground: 248 250 252;
+    --secondary: 241 245 249;
+    --secondary-foreground: 15 23 42;
+    --accent: 241 245 249;
+    --accent-foreground: 15 23 42;
+    --destructive: 239 68 68;
+    --destructive-foreground: 248 250 252;
+    --ring: 59 130 246;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --primary-color: 129 140 248; /* indigo-400 */
+    --secondary-color: 156 163 175; /* gray-400 */
+    --accent-color: 196 181 253; /* purple-300 */
+    --paper-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    
+    --background: 2 6 23;
+    --foreground: 248 250 252;
+    --muted: 15 23 42;
+    --muted-foreground: 148 163 184;
+    --popover: 2 6 23;
+    --popover-foreground: 248 250 252;
+    --card: 2 6 23;
+    --card-foreground: 248 250 252;
+    --border: 30 41 59;
+    --input: 30 41 59;
+    --primary: 59 130 246;
+    --primary-foreground: 15 23 42;
+    --secondary: 30 41 59;
+    --secondary-foreground: 248 250 252;
+    --accent: 30 41 59;
+    --accent-foreground: 248 250 252;
+    --destructive: 220 38 38;
+    --destructive-foreground: 248 250 252;
+    --ring: 59 130 246;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+

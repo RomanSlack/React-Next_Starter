@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { useAuthStore } from '@/lib/stores/auth';
 import { loginSchema } from '@/lib/utils/validation';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 type LoginFormData = {
   email: string;
