@@ -132,17 +132,17 @@ export interface CalendarEvent {
   id: string;
   title: string;
   description?: string;
-  start_date: string;
-  end_date: string;
-  all_day: boolean;
-  recurrence_rule?: string;
+  start_datetime: string;
+  end_datetime: string;
   location?: string;
-  attendees: string[];
-  reminders: EventReminder[];
+  event_type: string;
   color: string;
+  metadata?: Record<string, any>;
   user_id: string;
   created_at: string;
   updated_at: string;
+  is_all_day: boolean;
+  is_recurring: boolean;
 }
 
 export interface EventReminder {
