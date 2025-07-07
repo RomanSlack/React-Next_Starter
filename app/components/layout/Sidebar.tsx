@@ -11,6 +11,7 @@ import {
   CommandLineIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { useAppStore } from '@/lib/stores/app';
@@ -22,7 +23,7 @@ const navigation = [
   { name: 'Boards', href: '/boards', icon: RectangleStackIcon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
-  { name: 'AI Assistant', href: '/ai', icon: CommandLineIcon },
+  { name: 'AI Mode', href: '/ai-mode', icon: SparklesIcon },
   { name: 'Settings', href: '/settings', icon: CogIcon },
 ];
 

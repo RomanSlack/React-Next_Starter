@@ -4,7 +4,7 @@ import {
   MagnifyingGlassIcon,
   BellIcon,
   Bars3Icon,
-  CommandLineIcon,
+  SparklesIcon,
   SunIcon,
   MoonIcon,
   ComputerDesktopIcon,
@@ -263,13 +263,14 @@ const Header: React.FC = () => {
         
         {/* Right side */}
         <div className="flex items-center space-x-3">
-          {/* AI Command Bar */}
+          {/* AI Mode */}
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setCommandBarOpen(true)}
-            icon={<CommandLineIcon className="w-5 h-5" />}
-            className="hidden sm:flex"
+            onClick={() => router.push('/ai-mode')}
+            icon={<SparklesIcon className="w-5 h-5" />}
+            className="hidden sm:flex text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+            title="AI Mode"
           />
           
           {/* Theme Toggle */}
