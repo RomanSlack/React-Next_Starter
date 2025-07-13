@@ -36,6 +36,8 @@ const DashboardPage: React.FC = () => {
   const [todayQuests, setTodayQuests] = useState<Quest[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<CalendarEvent[]>([]);
   const [recentJournalEntries, setRecentJournalEntries] = useState<JournalEntry[]>([]);
+  const [questHeatmapData, setQuestHeatmapData] = useState<{ [date: string]: number }>({});
+  const [heatmapView, setHeatmapView] = useState<'month' | 'year'>('month');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -46,9 +48,19 @@ const DashboardPage: React.FC = () => {
     try {
       setLoading(true);
       
+      // Calculate date range for heatmap (last 12 months like GitHub)
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      
       // Fetch all data in parallel
-      const [questsResponse, eventsResponse, journalResponse, journalStatsResponse] = await Promise.allSettled([
+      const [questsResponse, questArchiveResponse, eventsResponse, journalResponse, journalStatsResponse] = await Promise.allSettled([
         questAPI.getTodayQuests(),
+        questAPI.getQuestArchive({
+          start_date: startDate.toISOString().split('T')[0],
+          end_date: endDate.toISOString().split('T')[0],
+          limit: 100
+        }),
         calendarAPI.getUpcomingEvents(5),
         journalAPI.getEntries(1, 5),
         journalAPI.getStats()
@@ -64,6 +76,20 @@ const DashboardPage: React.FC = () => {
           completedQuests: questDay.completed_count || 0,
           pendingQuests: questDay.pending_count || 0
         }));
+      }
+
+      // Process quest archive for heatmap
+      if (questArchiveResponse.status === 'fulfilled') {
+        const archive = questArchiveResponse.value;
+        const heatmapData: { [date: string]: number } = {};
+        
+        if (archive.days) {
+          archive.days.forEach((day: any) => {
+            heatmapData[day.date] = day.completed_count || 0;
+          });
+        }
+        
+        setQuestHeatmapData(heatmapData);
       }
 
       // Process events data
@@ -118,6 +144,138 @@ const DashboardPage: React.FC = () => {
       default: return 'bg-gray-500';
     }
   };
+
+  const getHeatmapColor = (completedCount: number) => {
+    if (completedCount === 0) return 'bg-gray-100';
+    if (completedCount === 1) return 'bg-green-200';
+    if (completedCount === 2) return 'bg-green-300';
+    if (completedCount >= 3 && completedCount <= 4) return 'bg-green-400';
+    if (completedCount >= 5 && completedCount <= 6) return 'bg-green-500';
+    return 'bg-green-600'; // 7+ completed quests
+  };
+
+  const generateHeatmapData = () => {
+    const today = new Date();
+    
+    if (heatmapView === 'month') {
+      // Current month view
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      
+      // Start from Sunday before the month begins
+      const start = new Date(startOfMonth);
+      start.setDate(start.getDate() - start.getDay());
+      
+      // End on Saturday after the month ends
+      const end = new Date(endOfMonth);
+      end.setDate(end.getDate() + (6 - end.getDay()));
+      
+      const weeks = [];
+      let currentWeek = [];
+      
+      const current = new Date(start);
+      while (current <= end) {
+        const dateStr = current.toISOString().split('T')[0];
+        const completedCount = questHeatmapData[dateStr] || 0;
+        const isCurrentMonth = current.getMonth() === today.getMonth();
+        
+        currentWeek.push({
+          date: dateStr,
+          completedCount,
+          isToday: current.toDateString() === today.toDateString(),
+          dayOfWeek: current.getDay(),
+          dayOfMonth: current.getDate(),
+          month: current.getMonth(),
+          year: current.getFullYear(),
+          isCurrentMonth
+        });
+        
+        // Complete week (Sunday to Saturday)
+        if (current.getDay() === 6) {
+          weeks.push([...currentWeek]);
+          currentWeek = [];
+        }
+        
+        current.setDate(current.getDate() + 1);
+      }
+      
+      return { 
+        weeks, 
+        months: [{ 
+          month: today.getMonth(), 
+          weekIndex: 0, 
+          name: today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+        }] 
+      };
+    } else {
+      // Year view (simplified for container fit)
+      const startDate = new Date();
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      
+      const start = new Date(startDate);
+      start.setDate(start.getDate() - start.getDay());
+      
+      const weeks = [];
+      const months = [];
+      let currentWeek = [];
+      let currentMonth = start.getMonth();
+      let weekIndex = 0;
+      
+      const current = new Date(start);
+      while (current <= today) {
+        const dateStr = current.toISOString().split('T')[0];
+        const completedCount = questHeatmapData[dateStr] || 0;
+        
+        if (current.getMonth() !== currentMonth) {
+          months.push({
+            month: currentMonth,
+            weekIndex: weekIndex,
+            name: new Date(current.getFullYear(), currentMonth).toLocaleDateString('en-US', { month: 'short' })
+          });
+          currentMonth = current.getMonth();
+        }
+        
+        currentWeek.push({
+          date: dateStr,
+          completedCount,
+          isToday: current.toDateString() === today.toDateString(),
+          dayOfWeek: current.getDay(),
+          dayOfMonth: current.getDate(),
+          month: current.getMonth(),
+          year: current.getFullYear(),
+          isCurrentMonth: true
+        });
+        
+        if (current.getDay() === 6) {
+          weeks.push([...currentWeek]);
+          currentWeek = [];
+          weekIndex++;
+        }
+        
+        current.setDate(current.getDate() + 1);
+      }
+      
+      if (currentWeek.length > 0) {
+        while (currentWeek.length < 7) {
+          currentWeek.push(null);
+        }
+        weeks.push(currentWeek);
+      }
+      
+      return { weeks, months };
+    }
+  };
+
+  const { weeks, months } = generateHeatmapData();
+  const totalContributions = heatmapView === 'month' 
+    ? Object.entries(questHeatmapData)
+        .filter(([date]) => {
+          const d = new Date(date);
+          const today = new Date();
+          return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+        })
+        .reduce((sum, [, count]) => sum + count, 0)
+    : Object.values(questHeatmapData).reduce((sum, count) => sum + count, 0);
   
   return (
     <AppLayout>
@@ -285,46 +443,116 @@ const DashboardPage: React.FC = () => {
             </CardContent>
           </Card>
           
-          {/* Pending Quests */}
+          {/* Quest Activity Heatmap */}
           <Card>
             <CardHeader
-              title="Pending Quests"
+              title="Quest Activity"
               action={
-                <Button variant="ghost" size="sm" onClick={() => router.push('/quest')}>
-                  View All
-                </Button>
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setHeatmapView('month')}
+                    className={cn(
+                      'px-3 py-1 text-xs font-medium rounded-md transition-colors',
+                      heatmapView === 'month' 
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    )}
+                  >
+                    Month
+                  </button>
+                  <button
+                    onClick={() => setHeatmapView('year')}
+                    className={cn(
+                      'px-3 py-1 text-xs font-medium rounded-md transition-colors',
+                      heatmapView === 'year' 
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    )}
+                  >
+                    Year
+                  </button>
+                </div>
               }
             />
             <CardContent>
-              <div className="space-y-3">
-                {todayQuests.filter(q => !q.is_complete).length === 0 ? (
-                  <div className="text-center py-8">
-                    <TrophyIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-2">All done!</p>
-                    <p className="text-sm text-gray-400">Great job completing all your quests</p>
-                  </div>
-                ) : (
-                  todayQuests
-                    .filter(q => !q.is_complete)
-                    .slice(0, 5)
-                    .map((quest) => (
-                      <div key={quest.id} className="flex items-start space-x-3">
-                        <div className="w-5 h-5 bg-gray-200 rounded border-2 border-gray-300 flex-shrink-0 mt-0.5"></div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {quest.content}
-                          </p>
-                          {quest.date_due && (
-                            <p className="text-xs text-gray-400 mt-1 flex items-center">
-                              <ClockIcon className="w-3 h-3 mr-1" />
-                              Due: {new Date(quest.date_due).toLocaleDateString()}
-                              {quest.time_due && ` at ${quest.time_due}`}
-                            </p>
-                          )}
+              <div className="space-y-4">
+                {/* Contribution count */}
+                <div className="text-sm text-gray-600">
+                  <span className="font-semibold text-gray-900">{totalContributions}</span> quests completed in the {heatmapView === 'month' ? 'current month' : 'last year'}
+                </div>
+
+                {/* Heatmap container with controlled width */}
+                <div className="relative overflow-hidden">
+                  {/* Month/Year label */}
+                  {heatmapView === 'month' && (
+                    <div className="mb-2 text-center">
+                      <h3 className="text-lg font-semibold text-gray-900">{months[0]?.name}</h3>
+                    </div>
+                  )}
+
+                  {/* Month labels for year view */}
+                  {heatmapView === 'year' && (
+                    <div className="flex justify-between mb-1 text-xs text-gray-500 overflow-hidden">
+                      {months.filter((_, index) => index % 3 === 0).map((monthData) => (
+                        <span key={`${monthData.month}-${monthData.weekIndex}`}>
+                          {monthData.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Main grid container */}
+                  <div className="flex overflow-x-auto pb-2">
+                    {/* Day of week labels */}
+                    <div className="flex flex-col justify-around text-xs text-gray-500 mr-2 flex-shrink-0" style={{ height: '84px' }}>
+                      <div></div> {/* Sunday - empty */}
+                      <div>Mon</div>
+                      <div></div> {/* Tuesday - empty */}
+                      <div>Wed</div>
+                      <div></div> {/* Thursday - empty */}
+                      <div>Fri</div>
+                      <div></div> {/* Saturday - empty */}
+                    </div>
+
+                    {/* Heatmap grid */}
+                    <div className="flex gap-1 flex-shrink-0">
+                      {weeks.map((week, weekIndex) => (
+                        <div key={weekIndex} className="flex flex-col gap-1">
+                          {week.map((day, dayIndex) => (
+                            <div
+                              key={day ? day.date : `empty-${weekIndex}-${dayIndex}`}
+                              className={cn(
+                                heatmapView === 'month' ? 'w-4 h-4' : 'w-2.5 h-2.5',
+                                'rounded-sm transition-all duration-200 cursor-pointer',
+                                day ? getHeatmapColor(day.completedCount) : 'bg-transparent',
+                                day && !day.isCurrentMonth && heatmapView === 'month' && 'opacity-30',
+                                day?.isToday && 'ring-1 ring-blue-500',
+                                day && 'hover:ring-1 hover:ring-gray-400'
+                              )}
+                              title={day ? `${day.date}: ${day.completedCount} quests completed` : ''}
+                            />
+                          ))}
                         </div>
-                      </div>
-                    ))
-                )}
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <span>Less</span>
+                    <div className="flex items-center gap-1 ml-1">
+                      <div className={cn(heatmapView === 'month' ? 'w-4 h-4' : 'w-2.5 h-2.5', 'bg-gray-100 rounded-sm border border-gray-200')}></div>
+                      <div className={cn(heatmapView === 'month' ? 'w-4 h-4' : 'w-2.5 h-2.5', 'bg-green-200 rounded-sm')}></div>
+                      <div className={cn(heatmapView === 'month' ? 'w-4 h-4' : 'w-2.5 h-2.5', 'bg-green-300 rounded-sm')}></div>
+                      <div className={cn(heatmapView === 'month' ? 'w-4 h-4' : 'w-2.5 h-2.5', 'bg-green-400 rounded-sm')}></div>
+                      <div className={cn(heatmapView === 'month' ? 'w-4 h-4' : 'w-2.5 h-2.5', 'bg-green-500 rounded-sm')}></div>
+                      <div className={cn(heatmapView === 'month' ? 'w-4 h-4' : 'w-2.5 h-2.5', 'bg-green-600 rounded-sm')}></div>
+                    </div>
+                    <span className="ml-1">More</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
