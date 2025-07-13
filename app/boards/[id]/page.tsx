@@ -275,7 +275,7 @@ const BoardDetailPage: React.FC = () => {
                       type="text"
                       value={editForm.title}
                       onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                      className="text-3xl font-bold bg-transparent border-b-2 border-grape-300 focus:border-grape-500 outline-none"
+                      className="text-3xl font-bold bg-transparent border-b-2 border-neutral-300 focus:border-neutral-500 outline-none"
                       autoFocus
                     />
                     <Button
@@ -298,7 +298,7 @@ const BoardDetailPage: React.FC = () => {
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                     placeholder="Board description"
-                    className="w-full p-2 text-gray-600 bg-transparent border border-gray-300 rounded focus:border-grape-500 outline-none resize-none"
+                    className="w-full p-2 text-gray-600 bg-transparent border border-gray-300 rounded focus:border-neutral-500 outline-none resize-none"
                     rows={2}
                   />
                 </div>
@@ -426,20 +426,20 @@ const BoardDetailPage: React.FC = () => {
                       placeholder="Card title"
                       value={cardForm.title}
                       onChange={(e) => setCardForm({ ...cardForm, title: e.target.value })}
-                      className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-grape-500"
+                      className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-neutral-500"
                       autoFocus
                     />
                     <textarea
                       placeholder="Card description"
                       value={cardForm.description}
                       onChange={(e) => setCardForm({ ...cardForm, description: e.target.value })}
-                      className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-grape-500"
+                      className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-neutral-500"
                       rows={2}
                     />
                     <select
                       value={cardForm.priority}
                       onChange={(e) => setCardForm({ ...cardForm, priority: e.target.value })}
-                      className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-grape-500"
+                      className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-neutral-500"
                     >
                       <option value="low">Low Priority</option>
                       <option value="medium">Medium Priority</option>
@@ -487,13 +487,13 @@ const BoardDetailPage: React.FC = () => {
                           type="text"
                           value={card.title}
                           onChange={(e) => handleUpdateCard(card.id, { title: e.target.value })}
-                          className="w-full font-medium bg-transparent border-b border-gray-200 focus:border-grape-500 outline-none"
+                          className="w-full font-medium bg-transparent border-b border-gray-200 focus:border-neutral-500 outline-none"
                           autoFocus
                         />
                         <textarea
                           value={card.description || ''}
                           onChange={(e) => handleUpdateCard(card.id, { description: e.target.value })}
-                          className="w-full text-sm text-gray-600 bg-transparent border border-gray-200 rounded p-1 focus:border-grape-500 outline-none"
+                          className="w-full text-sm text-gray-600 bg-transparent border border-gray-200 rounded p-1 focus:border-neutral-500 outline-none"
                           rows={2}
                         />
                         <div className="flex items-center space-x-2">

@@ -185,7 +185,7 @@ const SearchPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Search</h1>
+            <h1 className="text-3xl font-bold text-neutral-300">Search</h1>
             <p className="mt-1 text-lg text-gray-600">
               Find your content across boards, calendar, and journal
             </p>
@@ -220,7 +220,7 @@ const SearchPage: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={loading || !currentQuery.trim()}
-                  className="bg-grape-600 hover:bg-grape-700"
+                  className="bg-neutral-300 hover:bg-neutral-400"
                 >
                   {loading ? 'Searching...' : 'Search'}
                 </Button>
@@ -239,7 +239,7 @@ const SearchPage: React.FC = () => {
                         className={cn(
                           'flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                           searchType === filter.value
-                            ? 'bg-grape-100 text-grape-700 border border-grape-300'
+                            ? 'bg-neutral-100 text-neutral-700 border border-neutral-300'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         )}
                       >
@@ -328,7 +328,7 @@ const SearchPage: React.FC = () => {
                 <CardContent padding="xl">
                   <div className="text-center py-8">
                     <MagnifyingGlassIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
+                    <h3 className="text-lg font-medium text-neutral-300 mb-2">No results found</h3>
                     <p className="text-gray-500 mb-4">
                       We couldn't find anything matching "{searchResponse.query}"
                     </p>

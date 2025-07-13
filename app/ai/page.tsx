@@ -30,7 +30,7 @@ const AIPage: React.FC = () => {
           
           <Button
             icon={<CommandLineIcon className="w-5 h-5" />}
-            className="bg-grape-600 hover:bg-grape-700"
+            className="bg-neutral-600 hover:bg-neutral-700"
             onClick={() => setCommandBarOpen(true)}
           >
             Open Command Bar
@@ -95,7 +95,7 @@ const AIPage: React.FC = () => {
                 </p>
                 <Button
                   icon={<CommandLineIcon className="w-5 h-5" />}
-                  className="bg-grape-600 hover:bg-grape-700"
+                  className="bg-neutral-600 hover:bg-neutral-700"
                   onClick={() => setCommandBarOpen(true)}
                 >
                   Try Your First Command

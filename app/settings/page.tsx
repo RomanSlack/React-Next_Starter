@@ -23,7 +23,7 @@ const SettingsPage: React.FC = () => {
   const [showClearDataModal, setShowClearDataModal] = useState(false);
   
   const accentColors = [
-    { name: 'Grape', value: 'grape', color: 'bg-grape-500' },
+    { name: 'neutral', value: 'neutral', color: 'bg-neutral-500' },
     { name: 'Apple', value: 'apple', color: 'bg-apple-500' },
     { name: 'Orange', value: 'orange', color: 'bg-orange-500' },
     { name: 'Berry', value: 'berry', color: 'bg-berry-500' },

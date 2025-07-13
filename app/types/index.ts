@@ -14,7 +14,7 @@ export interface User {
 
 export interface UserPreferences {
   theme: 'light' | 'dark' | 'system';
-  accent_color: 'apple' | 'orange' | 'grape' | 'berry' | 'peach';
+  accent_color: 'apple' | 'orange' | 'neutral' | 'berry' | 'peach';
   notifications: NotificationSettings;
   language: string;
   timezone: string;
