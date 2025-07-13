@@ -2,71 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Neutral monochrome + blue-gradient accent ───────────────────── */
 @layer base {
   :root {
-    --primary-color: 99 102 241; /* indigo-500 */
-    --secondary-color: 107 114 128; /* gray-500 */
-    --accent-color: 168 85 247; /* purple-500 */
-    --paper-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    
-    /* Design system colors */
-    --background: 255 255 255;
-    --foreground: 15 23 42;
-    --muted: 248 250 252;
-    --muted-foreground: 100 116 139;
-    --popover: 255 255 255;
-    --popover-foreground: 15 23 42;
-    --card: 255 255 255;
-    --card-foreground: 15 23 42;
-    --border: 226 232 240;
-    --input: 226 232 240;
-    --primary: 59 130 246;
-    --primary-foreground: 248 250 252;
-    --secondary: 241 245 249;
-    --secondary-foreground: 15 23 42;
-    --accent: 241 245 249;
-    --accent-foreground: 15 23 42;
-    --destructive: 239 68 68;
-    --destructive-foreground: 248 250 252;
-    --ring: 59 130 246;
+    /* core neutrals */
+    --primary-color: 68 68 68;          /* neutral-600 */
+    --secondary-color: 120 120 120;     /* neutral-500 */
+
+    /* blue accent (midpoint + gradient endpoints) */
+    --accent: 59 130 246;               /* blue-500 */
+    --accent-from: 96 165 250;          /* blue-400 */
+    --accent-to: 37 99 235;             /* blue-700 */
+    --accent-gradient: linear-gradient(90deg,
+        rgb(var(--accent-from) / 1) 0%,
+        rgb(var(--accent) / 1) 50%,
+        rgb(var(--accent-to) / 1) 100%);
+
+    /* design-system roles */
+    --background: 15 15 15;             /* neutral-900 */
+    --foreground: 238 238 238;          /* zinc-100  */
+    --muted: 38 38 38;                  /* neutral-800 */
+    --muted-foreground: 156 163 175;    /* gray-400  */
+    --popover: 23 23 23;                /* neutral-850 */
+    --popover-foreground: 238 238 238;
+    --card: 23 23 23;
+    --card-foreground: 238 238 238;
+    --border: 55 65 81;                 /* slate-700 */
+    --input: 55 65 81;
+    --primary: 238 238 238;             /* zinc-100  */
+    --primary-foreground: 17 17 17;
+    --secondary: 38 38 38;              /* neutral-800 */
+    --secondary-foreground: 238 238 238;
+    --accent: 59 130 246;               /* blue-500  */
+    --accent-foreground: 255 255 255;   /* white */
+    --destructive: 127 29 29;           /* red-800   */
+    --destructive-foreground: 255 255 255;
+    --ring: 59 130 246;                 /* blue-500  */
     --radius: 0.5rem;
+
+    --paper-shadow:
+      0 1px 2px 0 rgb(0 0 0 / 0.05),
+      0 2px 4px -1px rgb(0 0 0 / 0.05);
   }
 
   .dark {
-    --primary-color: 129 140 248; /* indigo-400 */
-    --secondary-color: 156 163 175; /* gray-400 */
-    --accent-color: 196 181 253; /* purple-300 */
-    --paper-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
-    
-    --background: 2 6 23;
-    --foreground: 248 250 252;
-    --muted: 15 23 42;
-    --muted-foreground: 148 163 184;
-    --popover: 2 6 23;
-    --popover-foreground: 248 250 252;
-    --card: 2 6 23;
-    --card-foreground: 248 250 252;
-    --border: 30 41 59;
-    --input: 30 41 59;
-    --primary: 59 130 246;
-    --primary-foreground: 15 23 42;
-    --secondary: 30 41 59;
-    --secondary-foreground: 248 250 252;
-    --accent: 30 41 59;
-    --accent-foreground: 248 250 252;
-    --destructive: 220 38 38;
-    --destructive-foreground: 248 250 252;
-    --ring: 59 130 246;
+    --primary-color: 163 163 163;       /* neutral-400 */
+    --secondary-color: 113 113 122;     /* zinc-500   */
+
+    --accent: 96 165 250;               /* blue-400 */
+    --accent-from: 147 197 253;         /* blue-300 */
+    --accent-to: 59 130 246;            /* blue-500 */
+
+    --background: 15 15 15;             /* neutral-900 */
+    --foreground: 238 238 238;          /* zinc-100  */
+    --muted: 38 38 38;                  /* neutral-800 */
+    --muted-foreground: 156 163 175;    /* gray-400  */
+    --popover: 23 23 23;                /* neutral-850 */
+    --popover-foreground: 238 238 238;
+    --card: 23 23 23;
+    --card-foreground: 238 238 238;
+    --border: 55 65 81;                 /* slate-700 */
+    --input: 55 65 81;
+    --primary: 238 238 238;             /* zinc-100  */
+    --primary-foreground: 17 17 17;
+    --secondary: 38 38 38;              /* neutral-800 */
+    --secondary-foreground: 238 238 238;
+    --accent-foreground: 17 17 17;
+    --destructive: 185 28 28;           /* red-700   */
+    --destructive-foreground: 255 255 255;
+    --ring: 96 165 250;                 /* blue-400  */
+
+    --paper-shadow:
+      0 1px 2px 0 rgb(0 0 0 / 0.25),
+      0 2px 4px -1px rgb(0 0 0 / 0.25);
   }
 }
 
+/* ─── Defaults ────────────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border;
   }
-  
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    @apply dark; /* remove if light-first desired */
+  }
 }
-

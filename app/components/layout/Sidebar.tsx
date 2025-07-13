@@ -12,7 +12,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   SparklesIcon,
-  TrophyIcon,
+  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/app/lib/utils/cn';
 import { useAppStore } from '@/app/lib/stores/app';
@@ -24,7 +24,7 @@ const navigation = [
   { name: 'Boards', href: '/boards', icon: RectangleStackIcon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
-  { name: 'Quests', href: '/quest', icon: TrophyIcon },
+  { name: 'Quests', href: '/quest', icon: DocumentDuplicateIcon },
   { name: 'AI Mode', href: '/ai-mode', icon: SparklesIcon },
   { name: 'Settings', href: '/settings', icon: CogIcon },
 ];
@@ -55,10 +55,10 @@ const Sidebar: React.FC = () => {
           width: actualSidebarOpen ? 256 : 72,
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="hidden md:flex flex-col bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-30"
+        className="hidden md:flex flex-col bg-background border-r border-border h-screen fixed left-0 top-0 z-30"
       >
         {/* Logo */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <motion.div
             initial={false}
             animate={{
@@ -67,11 +67,11 @@ const Sidebar: React.FC = () => {
             transition={{ duration: 0.2 }}
             className="flex items-center space-x-2"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-grape-500 to-grape-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-accent to-accent/80 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">S</span>
             </div>
             {actualSidebarOpen && (
-              <span className="text-xl font-bold text-gray-900">Skema</span>
+              <span className="text-xl font-bold text-foreground">Skema</span>
             )}
           </motion.div>
           
@@ -83,12 +83,12 @@ const Sidebar: React.FC = () => {
                 useAppStore.setState({ hasHydrated: true });
               }
             }}
-            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-md hover:bg-muted transition-colors"
           >
             {actualSidebarOpen ? (
-              <ChevronLeftIcon className="w-5 h-5 text-gray-500" />
+              <ChevronLeftIcon className="w-5 h-5 text-muted-foreground" />
             ) : (
-              <ChevronRightIcon className="w-5 h-5 text-gray-500" />
+              <ChevronRightIcon className="w-5 h-5 text-muted-foreground" />
             )}
           </button>
         </div>
@@ -105,14 +105,14 @@ const Sidebar: React.FC = () => {
                     className={cn(
                       'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
                       active
-                        ? 'bg-grape-50 text-grape-700'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-accent/10 text-accent'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-foreground'
                     )}
                   >
                     <item.icon
                       className={cn(
                         'w-5 h-5 flex-shrink-0',
-                        active ? 'text-grape-500' : 'text-gray-500'
+                        active ? 'text-accent' : 'text-muted-foreground'
                       )}
                     />
                     
@@ -134,7 +134,7 @@ const Sidebar: React.FC = () => {
                     {active && (
                       <motion.div
                         layoutId="activeTab"
-                        className="absolute inset-0 bg-grape-50 rounded-md -z-10"
+                        className="absolute inset-0 bg-accent/10 rounded-md -z-10"
                         initial={false}
                         transition={{ duration: 0.2 }}
                       />
@@ -166,10 +166,10 @@ const Sidebar: React.FC = () => {
                 !actualSidebarOpen && 'sr-only'
               )}
             >
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {user?.full_name || 'User'}
               </p>
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {user?.email || 'Loading...'}
               </p>
             </motion.div>
@@ -190,22 +190,22 @@ const Sidebar: React.FC = () => {
         initial={{ x: -256 }}
         animate={{ x: actualSidebarOpen ? 0 : -256 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="md:hidden fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-50 flex flex-col"
+        className="md:hidden fixed left-0 top-0 h-full w-64 bg-background border-r border-border z-50 flex flex-col"
       >
         {/* Logo */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-grape-500 to-grape-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-accent to-accent/80 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">S</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Skema</span>
+            <span className="text-xl font-bold text-foreground">Skema</span>
           </div>
           
           <button
             onClick={() => setSidebarOpen(false)}
-            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-md hover:bg-muted transition-colors"
           >
-            <ChevronLeftIcon className="w-5 h-5 text-gray-500" />
+            <ChevronLeftIcon className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
         
@@ -221,15 +221,15 @@ const Sidebar: React.FC = () => {
                     className={cn(
                       'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
                       active
-                        ? 'bg-grape-50 text-grape-700'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-accent/10 text-accent'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-foreground'
                     )}
                     onClick={() => setSidebarOpen(false)}
                   >
                     <item.icon
                       className={cn(
                         'w-5 h-5 flex-shrink-0',
-                        active ? 'text-grape-500' : 'text-gray-500'
+                        active ? 'text-accent' : 'text-muted-foreground'
                       )}
                     />
                     <span className="ml-3">{item.name}</span>
@@ -250,10 +250,10 @@ const Sidebar: React.FC = () => {
             />
             
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {user?.full_name || 'User'}
               </p>
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {user?.email || 'Loading...'}
               </p>
             </div>

@@ -142,15 +142,15 @@ const Header: React.FC = () => {
   const getSuggestionIcon = (type: string) => {
     switch (type) {
       case 'board':
-        return <RectangleStackIcon className="w-4 h-4 text-blue-500" />;
+        return <RectangleStackIcon className="w-4 h-4 text-accent" />;
       case 'tag':
-        return <TagIcon className="w-4 h-4 text-purple-500" />;
+        return <TagIcon className="w-4 h-4 text-accent" />;
       case 'event':
-        return <CalendarIcon className="w-4 h-4 text-green-500" />;
+        return <CalendarIcon className="w-4 h-4 text-accent" />;
       case 'journal':
-        return <BookOpenIcon className="w-4 h-4 text-orange-500" />;
+        return <BookOpenIcon className="w-4 h-4 text-accent" />;
       default:
-        return <MagnifyingGlassIcon className="w-4 h-4 text-gray-500" />;
+        return <MagnifyingGlassIcon className="w-4 h-4 text-muted-foreground" />;
     }
   };
   
@@ -167,7 +167,7 @@ const Header: React.FC = () => {
   const unreadNotifications = (notifications || []).filter(n => !n.read).length;
   
   return (
-    <header className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 fixed top-0 right-0 left-0 md:left-64 z-20">
+    <header className="bg-background border-b border-border px-4 lg:px-6 py-4 fixed top-0 right-0 left-0 md:left-64 z-20">
       <div className="flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center space-x-4">
@@ -212,7 +212,7 @@ const Header: React.FC = () => {
                 />
                 
                 <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                  <kbd className="px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-100 border border-gray-200 rounded">
+                  <kbd className="px-2 py-1 text-xs font-semibold text-muted-foreground bg-muted border border-border rounded">
                     ⌘K
                   </kbd>
                 </div>
@@ -221,7 +221,7 @@ const Header: React.FC = () => {
 
             {/* Search Suggestions Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-64 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-background rounded-lg shadow-lg border border-border z-50 max-h-64 overflow-y-auto">
                 <div className="py-1">
                   {suggestions.map((suggestion, index) => (
                     <button
@@ -231,13 +231,13 @@ const Header: React.FC = () => {
                         performSearch(suggestion.text);
                       }}
                       className={cn(
-                        'w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors',
-                        selectedSuggestion === index && 'bg-grape-50 text-grape-700'
+                        'w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-muted transition-colors',
+                        selectedSuggestion === index && 'bg-accent/10 text-accent'
                       )}
                     >
                       {getSuggestionIcon(suggestion.type)}
                       <span className="flex-1 text-sm">{suggestion.text}</span>
-                      <span className="text-xs text-gray-400 capitalize">{suggestion.type}</span>
+                      <span className="text-xs text-muted-foreground capitalize">{suggestion.type}</span>
                     </button>
                   ))}
                 </div>
@@ -254,7 +254,7 @@ const Header: React.FC = () => {
             size="sm"
             onClick={() => router.push('/ai-mode')}
             icon={<SparklesIcon className="w-5 h-5" />}
-            className="hidden sm:flex text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+            className="hidden sm:flex text-accent hover:text-accent/80 hover:bg-accent/10"
             title="AI Mode"
           />
           
@@ -268,7 +268,7 @@ const Header: React.FC = () => {
               onClick={() => router.push('/notifications')}
             />
             {unreadNotifications > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
               </span>
             )}
@@ -284,35 +284,35 @@ const Header: React.FC = () => {
             />
             
             {/* Dropdown Menu */}
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div className="absolute right-0 top-full mt-2 w-48 bg-background rounded-md shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
               <div className="py-1">
-                <div className="px-3 py-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">
+                <div className="px-3 py-2 border-b border-border">
+                  <p className="text-sm font-medium text-foreground">
                     {user?.full_name || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-xs text-muted-foreground truncate">
                     {user?.email || 'Loading...'}
                   </p>
                 </div>
                 
                 <button
                   onClick={() => router.push('/settings')}
-                  className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="block w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 >
                   Profile Settings
                 </button>
                 
                 <button
                   onClick={() => router.push('/settings')}
-                  className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="block w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 >
                   Preferences
                 </button>
                 
-                <div className="border-t border-gray-100">
+                <div className="border-t border-border">
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    className="block w-full text-left px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     Sign Out
                   </button>

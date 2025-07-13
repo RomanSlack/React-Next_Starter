@@ -22,10 +22,10 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     const baseStyles = 'rounded-lg transition-all duration-200';
     
     const variants = {
-      default: 'bg-white border border-gray-200 shadow-sm',
-      elevated: 'bg-white shadow-lg border border-gray-100',
-      outlined: 'bg-white border-2 border-gray-300',
-      filled: 'bg-gray-50 border border-gray-200',
+      default: 'bg-card border border-border shadow-sm',
+      elevated: 'bg-card shadow-lg border border-border',
+      outlined: 'bg-card border-2 border-border',
+      filled: 'bg-muted border border-border',
     };
     
     const paddings = {
@@ -36,7 +36,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       xl: 'p-8',
     };
     
-    const interactiveStyles = hover || clickable ? 'hover:shadow-md hover:border-gray-300' : '';
+    const interactiveStyles = hover || clickable ? 'hover:shadow-md hover:border-border' : '';
     const cursorStyles = clickable ? 'cursor-pointer' : '';
     
     const Component = motion.div;
@@ -81,12 +81,12 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
       >
         <div className="flex-1 min-w-0">
           {title && (
-            <h3 className="text-lg font-medium text-gray-900 truncate">
+            <h3 className="text-lg font-medium text-card-foreground truncate">
               {title}
             </h3>
           )}
           {subtitle && (
-            <p className="mt-1 text-sm text-gray-500 truncate">
+            <p className="mt-1 text-sm text-muted-foreground truncate">
               {subtitle}
             </p>
           )}

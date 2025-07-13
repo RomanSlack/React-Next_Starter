@@ -32,12 +32,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, className }) => {
   // Show loading while initializing
   if (!isInitialized) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-grape-500 to-grape-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+          <div className="w-16 h-16 bg-gradient-to-br from-accent to-accent/80 rounded-xl flex items-center justify-center mb-4 mx-auto">
             <span className="text-white font-bold text-2xl">S</span>
           </div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -50,7 +50,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, className }) => {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         {/* Sidebar */}
         <Sidebar />
         
