@@ -5,9 +5,6 @@ import {
   BellIcon,
   Bars3Icon,
   SparklesIcon,
-  SunIcon,
-  MoonIcon,
-  ComputerDesktopIcon,
   RectangleStackIcon,
   DocumentTextIcon,
   CalendarIcon,
@@ -19,7 +16,6 @@ import { Input } from '@/app/components/ui/Input';
 import { Avatar } from '@/app/components/ui/Avatar';
 import { useAppStore } from '@/lib/stores/app';
 import { useAuthStore } from '@/lib/stores/auth';
-import { useThemeStore } from '@/lib/stores/theme';
 import { searchAPI, SearchSuggestion } from '@/app/lib/api/search';
 import { cn } from '@/lib/utils';
 import { debounce } from '@/app/lib/utils/debounce';
@@ -43,7 +39,6 @@ const Header: React.FC = () => {
   } = useAppStore();
   
   const { user, logout } = useAuthStore();
-  const { theme, setTheme, toggleTheme } = useThemeStore();
   
   // Debounced suggestions fetch
   const fetchSuggestions = useCallback(
@@ -168,16 +163,6 @@ const Header: React.FC = () => {
     }
   };
   
-  const getThemeIcon = () => {
-    switch (theme) {
-      case 'light':
-        return <SunIcon className="w-5 h-5" />;
-      case 'dark':
-        return <MoonIcon className="w-5 h-5" />;
-      default:
-        return <ComputerDesktopIcon className="w-5 h-5" />;
-    }
-  };
   
   const unreadNotifications = (notifications || []).filter(n => !n.read).length;
   
@@ -273,13 +258,6 @@ const Header: React.FC = () => {
             title="AI Mode"
           />
           
-          {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleTheme}
-            icon={getThemeIcon()}
-          />
           
           {/* Notifications */}
           <div className="relative">
