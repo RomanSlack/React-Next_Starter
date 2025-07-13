@@ -157,7 +157,7 @@ const Header: React.FC = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/login');
+      router.push('/auth/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }

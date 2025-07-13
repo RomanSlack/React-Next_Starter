@@ -675,7 +675,10 @@ const DashboardPage: React.FC = () => {
               }
             />
             <CardContent>
-              <div className="space-y-3">
+              <div className={cn(
+                "space-y-3",
+                todayQuests.length > 5 && "max-h-80 overflow-y-auto pr-2 quest-scrollbar"
+              )}>
                 {todayQuests.length === 0 ? (
                   <div className="text-center py-8">
                     <ListBulletIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -691,7 +694,7 @@ const DashboardPage: React.FC = () => {
                     </Button>
                   </div>
                 ) : (
-                  todayQuests.slice(0, 6).map((quest) => (
+                  todayQuests.map((quest) => (
                     <div
                       key={quest.id}
                       className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"

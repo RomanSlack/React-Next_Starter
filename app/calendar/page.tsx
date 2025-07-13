@@ -554,7 +554,11 @@ const CalendarPage: React.FC = () => {
                         <div className="mt-1 space-y-1">
                           {getEventsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day)).slice(0, 3).map((event) => {
                             const eventDate = new Date(event.start_datetime);
-                            const timeStr = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            const timeStr = eventDate.toLocaleTimeString([], { 
+                              hour: '2-digit', 
+                              minute: '2-digit',
+                              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                            });
                             return (
                               <div
                                 key={event.id}
@@ -732,7 +736,11 @@ const CalendarPage: React.FC = () => {
                 events.slice(0, 5).map((event) => {
                   const eventDate = new Date(event.start_datetime);
                   const dateStr = eventDate.toLocaleDateString();
-                  const timeStr = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  const timeStr = eventDate.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    timeZone: 'America/New_York' // Default to Eastern Time
+                  });
                   const endDate = new Date(event.end_datetime);
                   const duration = Math.round((endDate.getTime() - eventDate.getTime()) / (1000 * 60));
                   const durationStr = duration >= 60 ? `${Math.floor(duration / 60)}h` : `${duration}m`;

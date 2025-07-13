@@ -17,6 +17,7 @@ import {
 import { aiAPI } from '@/app/lib/api/ai';
 import { useAuthStore } from '@/lib/stores/auth';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
 
 interface VoiceRecorder {
   isRecording: boolean;
@@ -430,8 +431,35 @@ const AIModeePage: React.FC = () => {
 
                     {/* Response */}
                     <div className="mb-6">
-                      <div className="text-foreground whitespace-pre-wrap leading-relaxed">
-                        {result.response}
+                      <div className="text-foreground leading-relaxed markdown-content">
+                        <ReactMarkdown
+                          components={{
+                            h1: ({ children }) => <h1 className="text-2xl font-bold mb-4 text-foreground">{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-xl font-semibold mb-3 text-foreground">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-lg font-medium mb-2 text-foreground">{children}</h3>,
+                            h4: ({ children }) => <h4 className="text-base font-medium mb-2 text-foreground">{children}</h4>,
+                            p: ({ children }) => <p className="mb-3 text-foreground">{children}</p>,
+                            strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+                            em: ({ children }) => <em className="italic text-foreground">{children}</em>,
+                            ul: ({ children }) => <ul className="list-disc list-inside mb-3 text-foreground space-y-1">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal list-inside mb-3 text-foreground space-y-1">{children}</ol>,
+                            li: ({ children }) => <li className="text-foreground">{children}</li>,
+                            code: ({ children, className }) => {
+                              const isInline = !className;
+                              return isInline ? (
+                                <code className="bg-muted px-1.5 py-0.5 rounded text-sm text-foreground font-mono">{children}</code>
+                              ) : (
+                                <code className="block bg-muted p-3 rounded-lg text-sm text-foreground font-mono whitespace-pre-wrap">{children}</code>
+                              );
+                            },
+                            pre: ({ children }) => <pre className="bg-muted p-3 rounded-lg mb-3 overflow-x-auto">{children}</pre>,
+                            blockquote: ({ children }) => <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground mb-3">{children}</blockquote>,
+                            a: ({ href, children }) => <a href={href} className="text-accent hover:text-accent/80 underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+                            hr: () => <hr className="border-border my-4" />,
+                          }}
+                        >
+                          {result.response || ''}
+                        </ReactMarkdown>
                       </div>
                     </div>
 
