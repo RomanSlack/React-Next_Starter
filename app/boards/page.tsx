@@ -119,14 +119,14 @@ const BoardsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Boards</h1>
-            <p className="mt-1 text-lg text-gray-600">
+            <p className="mt-1 text-lg text-muted-foreground">
               Organize your projects with Kanban boards
             </p>
           </div>
           
           <Button
             icon={<PlusIcon className="w-5 h-5" />}
-            className="bg-grape-600 hover:bg-grape-700"
+            className="bg-accent hover:bg-accent/90"
             onClick={() => setShowCreateForm(true)}
             disabled={loading}
           >
@@ -136,7 +136,7 @@ const BoardsPage: React.FC = () => {
 
         {/* Create Board Form */}
         {showCreateForm && (
-          <Card className="mb-6 border-grape-200">
+          <Card className="mb-6">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-foreground">Create New Board</h3>
@@ -154,7 +154,7 @@ const BoardsPage: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Board Title *
                   </label>
                   <input
@@ -162,26 +162,26 @@ const BoardsPage: React.FC = () => {
                     value={createForm.title}
                     onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
                     placeholder="Enter board title"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-grape-500"
+                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:border-accent bg-background text-foreground"
                     autoFocus
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Description
                   </label>
                   <textarea
                     value={createForm.description}
                     onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
                     placeholder="Enter board description"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-grape-500"
+                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:border-accent bg-background text-foreground"
                     rows={3}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Board Color
                   </label>
                   <div className="flex items-center space-x-2">
@@ -191,7 +191,7 @@ const BoardsPage: React.FC = () => {
                         onClick={() => setCreateForm({ ...createForm, color })}
                         className={cn(
                           "w-8 h-8 rounded-lg border-2 transition-all",
-                          createForm.color === color ? "border-gray-900 scale-110" : "border-gray-200"
+                          createForm.color === color ? "border-foreground scale-110" : "border-border"
                         )}
                         style={{ backgroundColor: color }}
                       />
@@ -203,7 +203,7 @@ const BoardsPage: React.FC = () => {
                   <Button
                     onClick={handleCreateBoard}
                     disabled={!createForm.title.trim() || loading}
-                    className="bg-grape-600 hover:bg-grape-700"
+                    className="bg-accent hover:bg-accent/90"
                   >
                     Create Board
                   </Button>
@@ -265,7 +265,7 @@ const BoardsPage: React.FC = () => {
                       <h3 className="text-lg font-semibold text-foreground mt-3">
                         {board.title}
                       </h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {board.description}
                       </p>
                     </CardHeader>
@@ -275,20 +275,20 @@ const BoardsPage: React.FC = () => {
                         {/* Progress */}
                         <div>
                           <div className="flex items-center justify-between text-sm mb-1">
-                            <span className="text-gray-600">Progress</span>
+                            <span className="text-muted-foreground">Progress</span>
                             <span className="font-medium">
                               {getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
-                              className="bg-grape-500 h-2 rounded-full transition-all"
+                              className="bg-accent h-2 rounded-full transition-all"
                               style={{
                                 width: `${getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%`
                               }}
                             />
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {board.completedCards || 0} of {board.totalCards || 0} cards completed
                           </p>
                         </div>
@@ -300,7 +300,7 @@ const BoardsPage: React.FC = () => {
                             max={3}
                             size="sm"
                           />
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground">
                             {board.lastActivity || 'No activity yet'}
                           </span>
                         </div>
@@ -315,9 +315,9 @@ const BoardsPage: React.FC = () => {
         
         {/* Error State */}
         {error && (
-          <Card className="border-red-200 bg-red-50">
+          <Card className="border-destructive bg-destructive/10">
             <CardContent padding="lg">
-              <div className="text-center text-red-600">
+              <div className="text-center text-destructive">
                 <p className="font-medium">Error</p>
                 <p className="text-sm">{error}</p>
                 <Button 
@@ -341,8 +341,8 @@ const BoardsPage: React.FC = () => {
             <Card>
               <CardContent padding="xl">
                 <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-grape-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading boards...</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading boards...</p>
                 </div>
               </CardContent>
             </Card>
@@ -350,14 +350,14 @@ const BoardsPage: React.FC = () => {
             <Card>
               <CardContent padding="xl">
                 <div className="text-center py-12">
-                  <RectangleStackIcon className="w-24 h-24 text-gray-300 mx-auto mb-6" />
+                  <RectangleStackIcon className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
                   <h3 className="text-xl font-medium text-foreground mb-2">No boards yet</h3>
-                  <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                     Get organized by creating your first Kanban board. Track tasks, manage projects, and collaborate with your team.
                   </p>
                   <Button
                     icon={<PlusIcon className="w-5 h-5" />}
-                    className="bg-grape-600 hover:bg-grape-700"
+                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     onClick={() => setShowCreateForm(true)}
                     disabled={loading}
                   >
@@ -402,7 +402,7 @@ const BoardsPage: React.FC = () => {
                       <h3 className="text-lg font-semibold text-foreground mt-3">
                         {board.title}
                       </h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {board.description}
                       </p>
                     </CardHeader>
@@ -412,20 +412,20 @@ const BoardsPage: React.FC = () => {
                         {/* Progress */}
                         <div>
                           <div className="flex items-center justify-between text-sm mb-1">
-                            <span className="text-gray-600">Progress</span>
+                            <span className="text-muted-foreground">Progress</span>
                             <span className="font-medium">
                               {getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
-                              className="bg-grape-500 h-2 rounded-full transition-all"
+                              className="bg-accent h-2 rounded-full transition-all"
                               style={{
                                 width: `${getCompletionPercentage(board.completedCards || 0, board.totalCards || 0)}%`
                               }}
                             />
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {board.completedCards || 0} of {board.totalCards || 0} cards completed
                           </p>
                         </div>
@@ -437,7 +437,7 @@ const BoardsPage: React.FC = () => {
                             max={3}
                             size="sm"
                           />
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground">
                             {board.lastActivity || 'No activity yet'}
                           </span>
                         </div>

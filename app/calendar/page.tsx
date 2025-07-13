@@ -268,7 +268,7 @@ const CalendarPage: React.FC = () => {
           
           <Button
             icon={<PlusIcon className="w-5 h-5" />}
-            className="bg-grape-600 hover:bg-grape-700"
+            className="bg-accent hover:bg-accent/90"
             onClick={() => {
               initializeEventForm();
               setShowCreateForm(true);
@@ -281,10 +281,10 @@ const CalendarPage: React.FC = () => {
 
         {/* Create Event Form */}
         {showCreateForm && (
-          <Card className="border-grape-200">
+          <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Create New Event</h3>
+                <h3 className="text-lg font-semibold text-foreground">Create New Event</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -372,7 +372,7 @@ const CalendarPage: React.FC = () => {
                   {/* Duration Indicator */}
                   {eventForm.start_datetime && eventForm.end_datetime && (
                     <div className="text-center">
-                      <div className="inline-flex items-center px-3 py-1 bg-grape-50 text-grape-700 text-sm font-medium rounded-full border border-grape-200">
+                      <div className="inline-flex items-center px-3 py-1 bg-accent/10 text-accent text-sm font-medium rounded-full border border-accent/20"
                         <span>Duration: {(() => {
                           const start = new Date(eventForm.start_datetime);
                           const end = new Date(eventForm.end_datetime);
@@ -418,7 +418,7 @@ const CalendarPage: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border border-border">
+                  <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg border border-border"
                     <input
                       type="checkbox"
                       id="all-day"
@@ -591,7 +591,7 @@ const CalendarPage: React.FC = () => {
                     key={index}
                     className={cn(
                       'p-4 text-center border-b border-r border-border',
-                      isToday(date) ? 'bg-grape-50' : ''
+                      isToday(date) ? 'bg-accent/10' : ''
                     )}
                   >
                     <div className="text-sm font-medium text-muted-foreground">
@@ -599,7 +599,7 @@ const CalendarPage: React.FC = () => {
                     </div>
                     <div className={cn(
                       'text-lg font-medium mt-1',
-                      isToday(date) ? 'text-accent' : 'text-gray-900'
+                      isToday(date) ? 'text-accent' : 'text-foreground'
                     )}>
                       {date.getDate()}
                     </div>
@@ -620,7 +620,7 @@ const CalendarPage: React.FC = () => {
                         key={dayIndex}
                         className={cn(
                           'min-h-[60px] p-1 border-b border-r border-border relative',
-                          isToday(date) ? 'bg-grape-50' : 'hover:bg-gray-50'
+                          isToday(date) ? 'bg-accent/10' : 'hover:bg-muted/50'
                         )}
                       >
                         {getEventsForTimeSlot(date, slot.hour).map((event) => (
@@ -660,14 +660,14 @@ const CalendarPage: React.FC = () => {
                 <div>
                   <div className={cn(
                     'p-4 text-center border-b border-border',
-                    isToday(currentDate) ? 'bg-grape-50' : ''
+                    isToday(currentDate) ? 'bg-accent/10' : ''
                   )}>
                     <div className="text-sm font-medium text-muted-foreground">
                       {weekDays[currentDate.getDay()]}
                     </div>
                     <div className={cn(
                       'text-lg font-medium mt-1',
-                      isToday(currentDate) ? 'text-accent' : 'text-gray-900'
+                      isToday(currentDate) ? 'text-accent' : 'text-foreground'
                     )}>
                       {currentDate.getDate()}
                     </div>
@@ -678,7 +678,7 @@ const CalendarPage: React.FC = () => {
                       key={slot.hour}
                       className={cn(
                         'min-h-[60px] p-2 border-b border-border relative',
-                        isToday(currentDate) ? 'bg-grape-50' : 'hover:bg-gray-50'
+                        isToday(currentDate) ? 'bg-accent/10' : 'hover:bg-muted/50'
                       )}
                     >
                       {getEventsForTimeSlot(currentDate, slot.hour).map((event) => (
@@ -705,7 +705,7 @@ const CalendarPage: React.FC = () => {
                         </div>
                       ))}
                       {getEventsForTimeSlot(currentDate, slot.hour).length === 0 && (
-                        <div className="text-center text-gray-300 text-xs py-4">
+                        <div className="text-center text-muted-foreground text-xs py-4">
                           {/* Empty time slot */}
                         </div>
                       )}
@@ -724,9 +724,9 @@ const CalendarPage: React.FC = () => {
             <div className="space-y-4">
               {events.length === 0 ? (
                 <div className="text-center py-8">
-                  <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <CalendarIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">No upcoming events</p>
-                  <p className="text-sm text-gray-400">Create your first event to get started</p>
+                  <p className="text-sm text-muted-foreground">Create your first event to get started</p>
                 </div>
               ) : (
                 events.slice(0, 5).map((event) => {
@@ -744,7 +744,7 @@ const CalendarPage: React.FC = () => {
                         style={{ backgroundColor: event.color }}
                       />
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">{event.title}</h3>
+                        <h3 className="font-medium text-foreground">{event.title}</h3>
                         <p className="text-sm text-muted-foreground">
                           {dateStr} at {timeStr} • {durationStr}
                         </p>

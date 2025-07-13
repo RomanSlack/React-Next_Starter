@@ -56,15 +56,15 @@ const RegisterPage: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-grape-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-grape-500 to-grape-600 rounded-xl flex items-center justify-center mb-4">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-accent to-accent/80 rounded-xl flex items-center justify-center mb-4">
             <span className="text-white font-bold text-2xl">S</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="text-3xl font-bold text-foreground">Create your account</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Join Skema and boost your productivity
           </p>
         </div>
@@ -132,7 +132,7 @@ const RegisterPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                    className="text-muted-foreground hover:text-foreground focus:outline-none"
                   >
                     {showPassword ? (
                       <EyeSlashIcon className="w-5 h-5" />
@@ -157,7 +157,7 @@ const RegisterPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                    className="text-muted-foreground hover:text-foreground focus:outline-none"
                   >
                     {showConfirmPassword ? (
                       <EyeSlashIcon className="w-5 h-5" />
@@ -174,15 +174,15 @@ const RegisterPage: React.FC = () => {
                   id="terms"
                   type="checkbox"
                   required
-                  className="h-4 w-4 text-grape-600 focus:ring-grape-500 border-gray-300 rounded mt-1"
+                  className="h-4 w-4 text-accent focus:ring-accent border-border rounded mt-1"
                 />
-                <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+                <label htmlFor="terms" className="ml-2 block text-sm text-foreground">
                   I agree to the{' '}
-                  <Link href="/terms" className="text-grape-600 hover:text-grape-500 font-medium">
+                  <Link href="/terms" className="text-accent hover:text-accent/80 font-medium">
                     Terms of Service
                   </Link>{' '}
                   and{' '}
-                  <Link href="/privacy" className="text-grape-600 hover:text-grape-500 font-medium">
+                  <Link href="/privacy" className="text-accent hover:text-accent/80 font-medium">
                     Privacy Policy
                   </Link>
                 </label>
@@ -190,8 +190,8 @@ const RegisterPage: React.FC = () => {
               
               {/* Error message */}
               {errors.root && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                  <p className="text-sm text-red-600">{errors.root.message}</p>
+                <div className="bg-destructive/10 border border-destructive rounded-md p-3">
+                  <p className="text-sm text-destructive">{errors.root.message}</p>
                 </div>
               )}
               
@@ -201,7 +201,7 @@ const RegisterPage: React.FC = () => {
                 loading={isLoading}
                 fullWidth
                 size="lg"
-                className="bg-grape-600 hover:bg-grape-700"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
               >
                 Create Account
               </Button>
@@ -209,11 +209,11 @@ const RegisterPage: React.FC = () => {
             
             {/* Sign in link */}
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link
                   href="/auth/login"
-                  className="font-medium text-grape-600 hover:text-grape-500"
+                  className="font-medium text-accent hover:text-accent/80"
                 >
                   Sign in
                 </Link>

@@ -339,7 +339,7 @@ ${entry.content}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Journal</h1>
-            <p className="mt-1 text-lg text-gray-600">
+            <p className="mt-1 text-lg text-muted-foreground">
               Capture your thoughts and reflections
             </p>
           </div>
@@ -374,7 +374,7 @@ ${entry.content}
             
             <Button
               icon={<PlusIcon className="w-5 h-5" />}
-              className="bg-grape-600 hover:bg-grape-700"
+              className="bg-accent hover:bg-accent/90"
               onClick={initializeNewEntry}
               disabled={loading}
             >
@@ -389,7 +389,7 @@ ${entry.content}
             <CardContent padding="lg">
               <div className="text-center">
                 <p className="text-2xl font-bold text-foreground">{stats.total_entries || 0}</p>
-                <p className="text-sm text-gray-600">Total Entries</p>
+                <p className="text-sm text-muted-foreground">Total Entries</p>
               </div>
             </CardContent>
           </Card>
@@ -398,7 +398,7 @@ ${entry.content}
             <CardContent padding="lg">
               <div className="text-center">
                 <p className="text-2xl font-bold text-orange-600">{stats.streak_days || 0}</p>
-                <p className="text-sm text-gray-600">Day Streak</p>
+                <p className="text-sm text-muted-foreground">Day Streak</p>
               </div>
             </CardContent>
           </Card>
@@ -407,7 +407,7 @@ ${entry.content}
             <CardContent padding="lg">
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">{stats.average_words_per_entry || 0}</p>
-                <p className="text-sm text-gray-600">Avg Words</p>
+                <p className="text-sm text-muted-foreground">Avg Words</p>
               </div>
             </CardContent>
           </Card>
@@ -416,7 +416,7 @@ ${entry.content}
             <CardContent padding="lg">
               <div className="text-center">
                 <p className="text-2xl font-bold text-blue-600">{stats.entries_this_week || 0}</p>
-                <p className="text-sm text-gray-600">This Week</p>
+                <p className="text-sm text-muted-foreground">This Week</p>
               </div>
             </CardContent>
           </Card>
@@ -437,7 +437,7 @@ ${entry.content}
               
               <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-3 lg:space-y-0 lg:space-x-6">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-700">Mood:</span>
+                  <span className="text-sm font-medium text-foreground">Mood:</span>
                   {moods.map((mood) => (
                     <button
                       key={mood.value}
@@ -473,9 +473,9 @@ ${entry.content}
                       id="favorites-only"
                       checked={showFavoritesOnly}
                       onChange={(e) => setShowFavoritesOnly(e.target.checked)}
-                      className="w-4 h-4 rounded border-border text-grape-600 focus:ring-grape-500 focus:ring-2"
+                      className="w-4 h-4 rounded border-border text-accent focus:ring-accent focus:ring-2"
                     />
-                    <label htmlFor="favorites-only" className="text-sm font-medium text-gray-700 cursor-pointer flex items-center">
+                    <label htmlFor="favorites-only" className="text-sm font-medium text-foreground cursor-pointer flex items-center">
                       <StarIcon className="w-4 h-4 mr-1" />
                       Favorites only
                     </label>
@@ -487,9 +487,9 @@ ${entry.content}
                       id="private-only"
                       checked={showPrivateOnly}
                       onChange={(e) => setShowPrivateOnly(e.target.checked)}
-                      className="w-4 h-4 rounded border-border text-grape-600 focus:ring-grape-500 focus:ring-2"
+                      className="w-4 h-4 rounded border-border text-accent focus:ring-accent focus:ring-2"
                     />
-                    <label htmlFor="private-only" className="text-sm font-medium text-gray-700 cursor-pointer flex items-center">
+                    <label htmlFor="private-only" className="text-sm font-medium text-foreground cursor-pointer flex items-center">
                       <EyeSlashIcon className="w-4 h-4 mr-1" />
                       Private only
                     </label>
@@ -497,11 +497,11 @@ ${entry.content}
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                  <span className="text-sm font-medium text-foreground">Sort by:</span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'date' | 'title' | 'mood')}
-                    className="text-sm border border-border rounded px-2 py-1 focus:outline-none focus:border-grape-500"
+                    className="text-sm border border-border rounded px-2 py-1 focus:outline-none focus:border-accent bg-background text-foreground"
                   >
                     <option value="date">Date</option>
                     <option value="title">Title</option>
@@ -521,7 +521,7 @@ ${entry.content}
             {(searchQuery || selectedMood || showFavoritesOnly || showPrivateOnly) && (
               <div className="mt-4 pt-4 border-t border-border">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-muted-foreground">
                     {filteredEntries.length} result{filteredEntries.length !== 1 ? 's' : ''} found
                     {selectedMood && ` with ${moods.find(m => m.value === selectedMood)?.label.toLowerCase()} mood`}
                     {searchQuery && ` matching "${searchQuery}"`}
@@ -548,7 +548,7 @@ ${entry.content}
 
         {/* Create/Edit Entry Form */}
         {(showCreateForm || editingEntry) && (
-          <Card className="border-grape-200">
+          <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-foreground">
@@ -569,7 +569,7 @@ ${entry.content}
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Title *
                   </label>
                   <input
@@ -577,27 +577,27 @@ ${entry.content}
                     value={entryForm.title}
                     onChange={(e) => setEntryForm({ ...entryForm, title: e.target.value })}
                     placeholder="Enter entry title"
-                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:border-grape-500 shadow-sm transition-all duration-200 hover:border-grape-400 focus:shadow-md"
+                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:border-accent shadow-sm transition-all duration-200 hover:border-accent/80 focus:shadow-md bg-background text-foreground"
                     autoFocus
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Content *
                   </label>
                   <textarea
                     value={entryForm.content}
                     onChange={(e) => setEntryForm({ ...entryForm, content: e.target.value })}
                     placeholder="Share your thoughts, experiences, and reflections..."
-                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:border-grape-500 shadow-sm transition-all duration-200 hover:border-grape-400 focus:shadow-md resize-none"
+                    className="w-full p-3 border border-border rounded-lg focus:outline-none focus:border-accent shadow-sm transition-all duration-200 hover:border-accent/80 focus:shadow-md resize-none bg-background text-foreground"
                     rows={6}
                   />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Mood
                     </label>
                     <div className="flex items-center space-x-2">
@@ -621,7 +621,7 @@ ${entry.content}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Tags
                     </label>
                     <div className="flex items-center space-x-2 mb-2">
@@ -630,7 +630,7 @@ ${entry.content}
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
                         placeholder="Add tag"
-                        className="flex-1 p-2 border border-border rounded focus:outline-none focus:border-grape-500"
+                        className="flex-1 p-2 border border-border rounded focus:outline-none focus:border-accent bg-background text-foreground"
                         onKeyPress={(e) => e.key === 'Enter' && addTag()}
                       />
                       <Button
@@ -645,12 +645,12 @@ ${entry.content}
                       {entryForm.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center px-2 py-1 bg-grape-100 text-grape-700 text-xs rounded-full"
+                          className="inline-flex items-center px-2 py-1 bg-accent/10 text-accent text-xs rounded-full"
                         >
                           #{tag}
                           <button
                             onClick={() => removeTag(tag)}
-                            className="ml-1 text-grape-500 hover:text-grape-700"
+                            className="ml-1 text-accent/80 hover:text-accent"
                           >
                             <XMarkIcon className="w-3 h-3" />
                           </button>
@@ -667,9 +667,9 @@ ${entry.content}
                       id="is-private"
                       checked={entryForm.is_private}
                       onChange={(e) => setEntryForm({ ...entryForm, is_private: e.target.checked })}
-                      className="w-4 h-4 rounded border-border text-grape-600 focus:ring-grape-500 focus:ring-2"
+                      className="w-4 h-4 rounded border-border text-accent focus:ring-accent focus:ring-2"
                     />
-                    <label htmlFor="is-private" className="text-sm font-medium text-gray-700 cursor-pointer flex items-center">
+                    <label htmlFor="is-private" className="text-sm font-medium text-foreground cursor-pointer flex items-center">
                       <EyeSlashIcon className="w-4 h-4 mr-1" />
                       Private entry
                     </label>
@@ -681,9 +681,9 @@ ${entry.content}
                       id="is-favorite"
                       checked={entryForm.is_favorite}
                       onChange={(e) => setEntryForm({ ...entryForm, is_favorite: e.target.checked })}
-                      className="w-4 h-4 rounded border-border text-grape-600 focus:ring-grape-500 focus:ring-2"
+                      className="w-4 h-4 rounded border-border text-accent focus:ring-accent focus:ring-2"
                     />
-                    <label htmlFor="is-favorite" className="text-sm font-medium text-gray-700 cursor-pointer flex items-center">
+                    <label htmlFor="is-favorite" className="text-sm font-medium text-foreground cursor-pointer flex items-center">
                       <StarIcon className="w-4 h-4 mr-1" />
                       Mark as favorite
                     </label>
@@ -695,7 +695,7 @@ ${entry.content}
                 <Button
                   onClick={() => editingEntry ? handleUpdateEntry(editingEntry) : handleCreateEntry()}
                   disabled={!entryForm.title.trim() || !entryForm.content.trim() || loading}
-                  className="bg-grape-600 hover:bg-grape-700"
+                  className="bg-accent hover:bg-accent/90"
                 >
                   {editingEntry ? 'Update Entry' : 'Create Entry'}
                 </Button>
@@ -716,10 +716,10 @@ ${entry.content}
 
         {/* Error Display */}
         {error && (
-          <Card className="border-red-200 bg-red-50">
+          <Card className="border-destructive bg-destructive/10">
             <CardContent padding="sm">
               <div className="flex items-center justify-between">
-                <p className="text-red-600 text-sm">{error}</p>
+                <p className="text-destructive text-sm">{error}</p>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -754,7 +754,7 @@ ${entry.content}
                 hover
                 className={cn(
                   'transition-all duration-500',
-                  highlightedEntry === entry.id && 'ring-2 ring-grape-500 bg-grape-50'
+                  highlightedEntry === entry.id && 'ring-2 ring-accent bg-accent/10'
                 )}
               >
                 <CardHeader>
@@ -781,7 +781,7 @@ ${entry.content}
                         )}
                       </div>
                       
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <div className="flex items-center space-x-1">
                           <CalendarIcon className="w-4 h-4" />
                           <span>{dateStr}</span>
@@ -830,7 +830,7 @@ ${entry.content}
                 
                 <CardContent>
                   <div className="prose prose-sm max-w-none mb-4">
-                    <p className="text-gray-700 whitespace-pre-wrap line-clamp-4">
+                    <p className="text-foreground whitespace-pre-wrap line-clamp-4">
                       {entry.content}
                     </p>
                   </div>
@@ -840,7 +840,7 @@ ${entry.content}
                       {entry.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center px-2 py-1 bg-grape-100 text-grape-700 text-xs rounded-full cursor-pointer hover:bg-grape-200 transition-colors"
+                          className="inline-flex items-center px-2 py-1 bg-accent/10 text-accent text-xs rounded-full cursor-pointer hover:bg-accent/20 transition-colors"
                           onClick={() => setSearchQuery(tag)}
                           title={`Search for "${tag}"`}
                         >
@@ -851,11 +851,11 @@ ${entry.content}
                   )}
                   
                   {/* Word count */}
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                    <div className="text-xs text-gray-500">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                    <div className="text-xs text-muted-foreground">
                       {entry.content.split(' ').length} word{entry.content.split(' ').length !== 1 ? 's' : ''}
                     </div>
-                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                    <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                       <span>Created: {new Date(entry.created_at).toLocaleDateString()}</span>
                       {entry.updated_at !== entry.created_at && (
                         <span>Updated: {new Date(entry.updated_at).toLocaleDateString()}</span>
@@ -871,16 +871,16 @@ ${entry.content}
             <Card>
               <CardContent padding="xl">
                 <div className="text-center py-12">
-                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <div className="w-24 h-24 bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-4xl">📖</span>
                   </div>
                   <h3 className="text-xl font-medium text-foreground mb-2">Start your journaling journey</h3>
-                  <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                     Capture your thoughts, track your mood, and reflect on your experiences. Your first entry is just a click away.
                   </p>
                   <Button
                     icon={<PlusIcon className="w-5 h-5" />}
-                    className="bg-grape-600 hover:bg-grape-700"
+                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     onClick={initializeNewEntry}
                     disabled={loading}
                   >

@@ -44,15 +44,15 @@ const LoginPage: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-grape-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-grape-500 to-grape-600 rounded-xl flex items-center justify-center mb-4">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-accent to-accent/80 rounded-xl flex items-center justify-center mb-4">
             <span className="text-white font-bold text-2xl">S</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="text-3xl font-bold text-foreground">Welcome back</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Sign in to your Skema account
           </p>
         </div>
@@ -89,7 +89,7 @@ const LoginPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      className="text-muted-foreground hover:text-foreground focus:outline-none"
                     >
                       {showPassword ? (
                         <EyeSlashIcon className="w-5 h-5" />
@@ -107,16 +107,16 @@ const LoginPage: React.FC = () => {
                   <input
                     id="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 text-grape-600 focus:ring-grape-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-accent focus:ring-accent border-border rounded"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="remember-me" className="ml-2 block text-sm text-foreground">
                     Remember me
                   </label>
                 </div>
                 
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm text-grape-600 hover:text-grape-500 font-medium"
+                  className="text-sm text-accent hover:text-accent/80 font-medium"
                 >
                   Forgot your password?
                 </Link>
@@ -124,8 +124,8 @@ const LoginPage: React.FC = () => {
               
               {/* Error message */}
               {errors.root && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                  <p className="text-sm text-red-600">{errors.root.message}</p>
+                <div className="bg-destructive/10 border border-destructive rounded-md p-3">
+                  <p className="text-sm text-destructive">{errors.root.message}</p>
                 </div>
               )}
               
@@ -135,7 +135,7 @@ const LoginPage: React.FC = () => {
                 loading={isLoading}
                 fullWidth
                 size="lg"
-                className="bg-grape-600 hover:bg-grape-700"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
               >
                 Sign In
               </Button>
@@ -143,11 +143,11 @@ const LoginPage: React.FC = () => {
             
             {/* Sign up link */}
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Don't have an account?{' '}
                 <Link
                   href="/auth/register"
-                  className="font-medium text-grape-600 hover:text-grape-500"
+                  className="font-medium text-accent hover:text-accent/80"
                 >
                   Sign up for free
                 </Link>
