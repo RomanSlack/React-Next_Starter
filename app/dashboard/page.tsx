@@ -249,6 +249,8 @@ const DashboardPage: React.FC = () => {
                   recentBoards.map((board, index) => {
                     const boardIcon = getBoardIcon(index);
                     const IconComponent = boardIcon.icon;
+                    // Use the board's actual color from the database, fallback to icon color
+                    const boardColor = board.color || boardIcon.colorClass;
                     
                     return (
                       <div
@@ -257,7 +259,10 @@ const DashboardPage: React.FC = () => {
                         onClick={() => router.push(`/boards/${board.id}`)}
                       >
                         <div className="flex items-center space-x-3">
-                          <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', boardIcon.colorClass)}>
+                          <div 
+                            className={cn('w-10 h-10 rounded-lg flex items-center justify-center', !boardColor.startsWith('#') ? boardColor : '')}
+                            style={{ backgroundColor: boardColor.startsWith('#') ? boardColor : undefined }}
+                          >
                             <IconComponent className="w-5 h-5 text-white" />
                           </div>
                           <div>
