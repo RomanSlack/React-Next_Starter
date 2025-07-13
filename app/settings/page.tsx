@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
 import { Button } from '@/app/components/ui/Button';
@@ -13,12 +13,14 @@ import {
   ShieldCheckIcon,
   GlobeAltIcon,
 } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/lib/stores/auth';
-import { useThemeStore } from '@/lib/stores/theme';
+import { useAuthStore } from '@/app/lib/stores/auth';
+import { useThemeStore } from '@/app/lib/stores/theme';
+import ClearAccountDataModal from '@/app/components/settings/ClearAccountDataModal';
 
 const SettingsPage: React.FC = () => {
   const { user } = useAuthStore();
   const { theme, accentColor, setTheme, setAccentColor } = useThemeStore();
+  const [showClearDataModal, setShowClearDataModal] = useState(false);
   
   const accentColors = [
     { name: 'Grape', value: 'grape', color: 'bg-grape-500' },
@@ -53,7 +55,7 @@ const SettingsPage: React.FC = () => {
               <div className="flex items-center space-x-6">
                 <Avatar
                   src={user?.avatar_url}
-                  name={user ? `${user.first_name} ${user.last_name}` : 'User'}
+                  name={user?.full_name || user?.email || 'User'}
                   size="xl"
                 />
                 <div>
@@ -68,21 +70,17 @@ const SettingsPage: React.FC = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
-                  label="First Name"
-                  defaultValue={user?.first_name || ''}
+                  label="Full Name"
+                  defaultValue={user?.full_name || ''}
                 />
                 <Input
-                  label="Last Name"
-                  defaultValue={user?.last_name || ''}
+                  label="Username"
+                  defaultValue={user?.username || ''}
                 />
                 <Input
                   label="Email"
                   type="email"
                   defaultValue={user?.email || ''}
-                />
-                <Input
-                  label="Username"
-                  defaultValue={user?.username || ''}
                 />
               </div>
               
@@ -249,6 +247,20 @@ const SettingsPage: React.FC = () => {
               
               <div className="flex items-center justify-between">
                 <div>
+                  <h4 className="text-sm font-medium text-red-900">Clear all account data</h4>
+                  <p className="text-sm text-gray-500">Delete all boards, calendar events, journal entries, and AI history</p>
+                </div>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => setShowClearDataModal(true)}
+                >
+                  Clear All Data
+                </Button>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
                   <h4 className="text-sm font-medium text-red-900">Delete account</h4>
                   <p className="text-sm text-gray-500">Permanently delete your account and all data</p>
                 </div>
@@ -260,6 +272,12 @@ const SettingsPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Clear Account Data Modal */}
+      <ClearAccountDataModal 
+        isOpen={showClearDataModal}
+        onClose={() => setShowClearDataModal(false)}
+      />
     </AppLayout>
   );
 };
