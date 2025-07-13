@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
@@ -13,12 +13,16 @@ import {
   BookOpenIcon,
   TrophyIcon,
   ListBulletIcon,
+  MicrophoneIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 import { useAuthStore } from '@/lib/stores/auth';
 import { cn } from '@/lib/utils';
 import { questAPI, Quest, QuestDay } from '@/app/lib/api/quest';
 import { calendarAPI } from '@/app/lib/api/calendar';
 import { journalAPI } from '@/app/lib/api/journal';
+import { aiAPI } from '@/app/lib/api/ai';
 import { CalendarEvent, JournalEntry } from '@/types';
 
 const DashboardPage: React.FC = () => {
@@ -39,10 +43,60 @@ const DashboardPage: React.FC = () => {
   const [questHeatmapData, setQuestHeatmapData] = useState<{ [date: string]: number }>({});
   const [heatmapView, setHeatmapView] = useState<'month' | 'year'>('month');
   const [loading, setLoading] = useState(false);
+  
+  // Quick Add Voice State
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [quickAddStatus, setQuickAddStatus] = useState<'idle' | 'recording' | 'processing' | 'success' | 'error'>('idle');
+  const [transcript, setTranscript] = useState('');
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     fetchDashboardData();
+    initializeSpeechRecognition();
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
   }, []);
+
+  const initializeSpeechRecognition = () => {
+    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event: any) => {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (finalTranscript) {
+          setTranscript(finalTranscript);
+        }
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setQuickAddStatus('error');
+        setIsRecording(false);
+        setTimeout(() => setQuickAddStatus('idle'), 2000);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+        if (transcript && quickAddStatus === 'recording') {
+          processVoiceInput(transcript);
+        }
+      };
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -121,8 +175,60 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleQuickAdd = () => {
-    // Redirect to quest page for quick task creation
-    router.push('/quest');
+    if (quickAddStatus === 'idle') {
+      startVoiceRecording();
+    } else if (quickAddStatus === 'recording') {
+      stopVoiceRecording();
+    }
+  };
+
+  const startVoiceRecording = () => {
+    if (recognitionRef.current) {
+      setTranscript('');
+      setQuickAddStatus('recording');
+      setIsRecording(true);
+      recognitionRef.current.start();
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const processVoiceInput = async (voiceText: string) => {
+    if (!voiceText.trim()) {
+      setQuickAddStatus('error');
+      setTimeout(() => setQuickAddStatus('idle'), 2000);
+      return;
+    }
+
+    setQuickAddStatus('processing');
+    setIsProcessing(true);
+
+    try {
+      const response = await aiAPI.sendMessage(voiceText.trim());
+      
+      if (response.success) {
+        setQuickAddStatus('success');
+        // Refresh dashboard data to show new content
+        await fetchDashboardData();
+      } else {
+        setQuickAddStatus('error');
+      }
+    } catch (error) {
+      console.error('Failed to process voice input:', error);
+      setQuickAddStatus('error');
+    } finally {
+      setIsProcessing(false);
+      // Reset to idle after showing status
+      setTimeout(() => {
+        setQuickAddStatus('idle');
+        setTranscript('');
+      }, 2000);
+    }
   };
 
   const handleToggleQuest = async (questId: string, isComplete: boolean) => {
@@ -267,6 +373,22 @@ const DashboardPage: React.FC = () => {
   };
 
   const { weeks, months } = generateHeatmapData();
+  
+  // Add custom CSS for sound wave animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes soundwave {
+        0%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(1.5); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
   const totalContributions = heatmapView === 'month' 
     ? Object.entries(questHeatmapData)
         .filter(([date]) => {
@@ -292,14 +414,65 @@ const DashboardPage: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-3">
-            <Button
-              icon={<PlusIcon className="w-5 h-5" />}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            <button
               onClick={handleQuickAdd}
-              disabled={loading}
+              disabled={loading || isProcessing}
+              className={cn(
+                'relative group px-6 py-3 rounded-2xl font-medium text-white transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:opacity-50 shadow-lg',
+                quickAddStatus === 'idle' && 'bg-gradient-to-r from-slate-700 via-blue-700 to-indigo-800 hover:from-slate-800 hover:via-blue-800 hover:to-indigo-900',
+                quickAddStatus === 'recording' && 'bg-gradient-to-r from-red-500 to-pink-500 animate-pulse',
+                quickAddStatus === 'processing' && 'bg-gradient-to-r from-yellow-500 to-orange-500',
+                quickAddStatus === 'success' && 'bg-gradient-to-r from-green-500 to-emerald-500',
+                quickAddStatus === 'error' && 'bg-gradient-to-r from-red-500 to-red-600'
+              )}
             >
-              Quick Add
-            </Button>
+              
+              {/* Content */}
+              <div className="relative flex items-center space-x-2">
+                {quickAddStatus === 'idle' && (
+                  <>
+                    <PlusIcon className="w-5 h-5" />
+                    <span>Quick Add</span>
+                  </>
+                )}
+                
+                {quickAddStatus === 'recording' && (
+                  <>
+                    <div className="relative">
+                      <MicrophoneIcon className="w-5 h-5" />
+                      {/* Sound wave animation */}
+                      <div className="absolute -inset-2 opacity-75">
+                        <div className="h-1 bg-white rounded-full animate-pulse" style={{ animation: 'soundwave 1s ease-in-out infinite' }} />
+                        <div className="h-1 bg-white rounded-full animate-pulse" style={{ animation: 'soundwave 1s ease-in-out infinite 0.1s' }} />
+                        <div className="h-1 bg-white rounded-full animate-pulse" style={{ animation: 'soundwave 1s ease-in-out infinite 0.2s' }} />
+                      </div>
+                    </div>
+                    <span>Listening...</span>
+                  </>
+                )}
+                
+                {quickAddStatus === 'processing' && (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Processing...</span>
+                  </>
+                )}
+                
+                {quickAddStatus === 'success' && (
+                  <>
+                    <CheckIcon className="w-5 h-5" />
+                    <span>Done!</span>
+                  </>
+                )}
+                
+                {quickAddStatus === 'error' && (
+                  <>
+                    <XMarkIcon className="w-5 h-5" />
+                    <span>Failed</span>
+                  </>
+                )}
+              </div>
+            </button>
           </div>
         </div>
         
