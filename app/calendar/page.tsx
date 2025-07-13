@@ -372,7 +372,7 @@ const CalendarPage: React.FC = () => {
                   {/* Duration Indicator */}
                   {eventForm.start_datetime && eventForm.end_datetime && (
                     <div className="text-center">
-                      <div className="inline-flex items-center px-3 py-1 bg-accent/10 text-accent text-sm font-medium rounded-full border border-accent/20"
+                      <div className="inline-flex items-center px-3 py-1 bg-accent/10 text-accent text-sm font-medium rounded-full border border-accent/20">
                         <span>Duration: {(() => {
                           const start = new Date(eventForm.start_datetime);
                           const end = new Date(eventForm.end_datetime);
