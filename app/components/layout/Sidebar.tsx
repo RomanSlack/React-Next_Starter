@@ -24,7 +24,7 @@ const navigation = [
   { name: 'Boards', href: '/boards', icon: RectangleStackIcon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
-  { name: 'Quest', href: '/quest', icon: TrophyIcon },
+  { name: 'Quests', href: '/quest', icon: TrophyIcon },
   { name: 'AI Mode', href: '/ai-mode', icon: SparklesIcon },
   { name: 'Settings', href: '/settings', icon: CogIcon },
 ];

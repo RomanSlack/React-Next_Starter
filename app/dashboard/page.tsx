@@ -5,42 +5,35 @@ import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/app/components/layout/AppLayout';
 import { Card, CardContent, CardHeader } from '@/app/components/ui/Card';
 import { Button } from '@/app/components/ui/Button';
-import { Avatar, AvatarGroup } from '@/app/components/ui/Avatar';
-import { Skeleton } from '@/app/components/ui/Loading';
 import {
   PlusIcon,
   CalendarIcon,
   ClockIcon,
   CheckCircleIcon,
-  RectangleStackIcon,
   BookOpenIcon,
-  ChartBarIcon,
   TrophyIcon,
-  Squares2X2Icon,
-  ViewColumnsIcon,
   ListBulletIcon,
-  TableCellsIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/lib/stores/auth';
 import { cn } from '@/lib/utils';
-import { boardsAPI } from '@/app/lib/api/boards';
+import { questAPI, Quest, QuestDay } from '@/app/lib/api/quest';
 import { calendarAPI } from '@/app/lib/api/calendar';
 import { journalAPI } from '@/app/lib/api/journal';
-import { Board, CalendarEvent, JournalEntry } from '@/types';
+import { CalendarEvent, JournalEntry } from '@/types';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
   const router = useRouter();
   
   const [stats, setStats] = useState({
-    totalBoards: 0,
-    totalCards: 0,
-    completedCards: 0,
+    totalQuests: 0,
+    completedQuests: 0,
+    pendingQuests: 0,
     upcomingEvents: 0,
     journalEntries: 0,
   });
   
-  const [recentBoards, setRecentBoards] = useState<Board[]>([]);
+  const [todayQuests, setTodayQuests] = useState<Quest[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<CalendarEvent[]>([]);
   const [recentJournalEntries, setRecentJournalEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,18 +47,23 @@ const DashboardPage: React.FC = () => {
       setLoading(true);
       
       // Fetch all data in parallel
-      const [boardsResponse, eventsResponse, journalResponse, journalStatsResponse] = await Promise.allSettled([
-        boardsAPI.getBoards(1, 5),
+      const [questsResponse, eventsResponse, journalResponse, journalStatsResponse] = await Promise.allSettled([
+        questAPI.getTodayQuests(),
         calendarAPI.getUpcomingEvents(5),
         journalAPI.getEntries(1, 5),
         journalAPI.getStats()
       ]);
 
-      // Process boards data
-      if (boardsResponse.status === 'fulfilled') {
-        const boards = boardsResponse.value.items || [];
-        setRecentBoards(boards);
-        setStats(prev => ({ ...prev, totalBoards: boards.length }));
+      // Process quests data
+      if (questsResponse.status === 'fulfilled') {
+        const questDay = questsResponse.value;
+        setTodayQuests(questDay.quests || []);
+        setStats(prev => ({ 
+          ...prev, 
+          totalQuests: questDay.total_count || 0,
+          completedQuests: questDay.completed_count || 0,
+          pendingQuests: questDay.pending_count || 0
+        }));
       }
 
       // Process events data
@@ -97,26 +95,19 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleQuickAdd = () => {
-    // Simple modal or dropdown could be implemented here
-    // For now, redirect to boards page
-    router.push('/boards');
+    // Redirect to quest page for quick task creation
+    router.push('/quest');
   };
 
-  const handleCreateBoard = async () => {
+  const handleToggleQuest = async (questId: string, isComplete: boolean) => {
     try {
-      await boardsAPI.createBoard({
-        title: 'New Board',
-        description: 'Add a description for your board',
-        color: 'bg-blue-500'
-      });
-      router.push('/boards');
+      await questAPI.toggleQuestComplete(questId, isComplete);
+      await fetchDashboardData(); // Refresh data
     } catch (error) {
-      console.error('Failed to create board:', error);
+      console.error('Failed to toggle quest:', error);
     }
   };
 
-  const upcomingTasks: any[] = []; // This would come from cards API
-  
   const getMoodColor = (mood: string) => {
     switch (mood) {
       case 'great': return 'bg-green-500';
@@ -126,17 +117,6 @@ const DashboardPage: React.FC = () => {
       case 'terrible': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
-  };
-  
-  const getBoardIcon = (index: number) => {
-    const icons = [
-      { icon: Squares2X2Icon, colorClass: 'bg-blue-500' },
-      { icon: ViewColumnsIcon, colorClass: 'bg-purple-500' },
-      { icon: ListBulletIcon, colorClass: 'bg-green-500' },
-      { icon: TableCellsIcon, colorClass: 'bg-orange-500' },
-      { icon: RectangleStackIcon, colorClass: 'bg-pink-500' },
-    ];
-    return icons[index % icons.length];
   };
   
   return (
@@ -149,7 +129,7 @@ const DashboardPage: React.FC = () => {
               Welcome back, {user?.full_name?.split(' ')[0] || 'there'}!
             </h1>
             <p className="mt-1 text-lg text-gray-600">
-              Here's what's happening with your projects today.
+              Here's your quest progress and what's planned for today.
             </p>
           </div>
           
@@ -166,18 +146,18 @@ const DashboardPage: React.FC = () => {
         </div>
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardContent padding="lg">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <RectangleStackIcon className="w-5 h-5 text-blue-600" />
+                    <ListBulletIcon className="w-5 h-5 text-blue-600" />
                   </div>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Boards</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalBoards}</p>
+                  <p className="text-sm font-medium text-gray-600">Total Quests</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalQuests}</p>
                 </div>
               </div>
             </CardContent>
@@ -192,8 +172,24 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Completed Tasks</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.completedCards}</p>
+                  <p className="text-sm font-medium text-gray-600">Completed</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.completedQuests}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent padding="lg">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <ClockIcon className="w-5 h-5 text-orange-600" />
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Pending</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.pendingQuests}</p>
                 </div>
               </div>
             </CardContent>
@@ -208,7 +204,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Upcoming Events</p>
+                  <p className="text-sm font-medium text-gray-600">Events</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.upcomingEvents}</p>
                 </div>
               </div>
@@ -219,107 +215,115 @@ const DashboardPage: React.FC = () => {
         
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Boards */}
+          {/* Today's Quests */}
           <Card className="lg:col-span-2">
             <CardHeader
-              title="Recent Boards"
+              title="Today's Quests"
               action={
-                <Button variant="ghost" size="sm" onClick={() => router.push('/boards')}>
-                  View All
-                </Button>
-              }
-            />
-            <CardContent>
-              <div className="space-y-4">
-                {recentBoards.length === 0 ? (
-                  <div className="text-center py-8">
-                    <RectangleStackIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-2">No boards yet</p>
-                    <p className="text-sm text-gray-400">Create your first board to get started</p>
-                    <Button 
-                      className="mt-4 bg-grape-600 hover:bg-grape-700"
-                      size="sm"
-                      onClick={handleCreateBoard}
-                      disabled={loading}
-                    >
-                      Create Board
-                    </Button>
-                  </div>
-                ) : (
-                  recentBoards.map((board, index) => {
-                    const boardIcon = getBoardIcon(index);
-                    const IconComponent = boardIcon.icon;
-                    // Use the board's actual color from the database, fallback to icon color
-                    const boardColor = board.color || boardIcon.colorClass;
-                    
-                    return (
-                      <div
-                        key={board.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                        onClick={() => router.push(`/boards/${board.id}`)}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div 
-                            className={cn('w-10 h-10 rounded-lg flex items-center justify-center', !boardColor.startsWith('#') ? boardColor : '')}
-                            style={{ backgroundColor: boardColor.startsWith('#') ? boardColor : undefined }}
-                          >
-                            <IconComponent className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-gray-900">{board.title}</h3>
-                            <p className="text-sm text-gray-500">{board.members} members</p>
-                          </div>
-                        </div>
-                        
-                        <AvatarGroup
-                          avatars={Array.from({ length: board.members }, (_, i) => ({
-                            name: `User ${i + 1}`,
-                          }))}
-                          max={3}
-                          size="sm"
-                        />
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Upcoming Tasks */}
-          <Card>
-            <CardHeader
-              title="Upcoming Tasks"
-              action={
-                <Button variant="ghost" size="sm" onClick={() => router.push('/boards')}>
+                <Button variant="ghost" size="sm" onClick={() => router.push('/quest')}>
                   View All
                 </Button>
               }
             />
             <CardContent>
               <div className="space-y-3">
-                {upcomingTasks.length === 0 ? (
+                {todayQuests.length === 0 ? (
                   <div className="text-center py-8">
-                    <ClockIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-2">No upcoming tasks</p>
-                    <p className="text-sm text-gray-400">Create boards and add cards to see tasks here</p>
+                    <ListBulletIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">No quests for today</p>
+                    <p className="text-sm text-gray-400">Add your first quest to get started</p>
+                    <Button 
+                      className="mt-4 bg-grape-600 hover:bg-grape-700"
+                      size="sm"
+                      onClick={() => router.push('/quest')}
+                      disabled={loading}
+                    >
+                      Add Quest
+                    </Button>
                   </div>
                 ) : (
-                  upcomingTasks.map((task) => (
-                    <div key={task.id} className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-gray-200 rounded border-2 border-gray-300 flex-shrink-0 mt-0.5"></div>
+                  todayQuests.slice(0, 6).map((quest) => (
+                    <div
+                      key={quest.id}
+                      className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <button
+                        onClick={() => handleToggleQuest(quest.id, !quest.is_complete)}
+                        className={cn(
+                          'w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors',
+                          quest.is_complete
+                            ? 'bg-green-500 border-green-500 text-white'
+                            : 'border-gray-300 hover:border-green-400'
+                        )}
+                      >
+                        {quest.is_complete && (
+                          <CheckCircleIcon className="w-3 h-3" />
+                        )}
+                      </button>
+                      
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {task.title}
+                        <p className={cn(
+                          'text-sm font-medium truncate',
+                          quest.is_complete 
+                            ? 'line-through text-gray-500' 
+                            : 'text-gray-900'
+                        )}>
+                          {quest.content}
                         </p>
-                        <p className="text-xs text-gray-500">{task.board}</p>
-                        <p className="text-xs text-gray-400 mt-1 flex items-center">
-                          <ClockIcon className="w-3 h-3 mr-1" />
-                          {task.dueDate}
-                        </p>
+                        {quest.date_due && (
+                          <p className="text-xs text-gray-500 flex items-center mt-1">
+                            <ClockIcon className="w-3 h-3 mr-1" />
+                            Due: {new Date(quest.date_due).toLocaleDateString()}
+                            {quest.time_due && ` at ${quest.time_due}`}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Pending Quests */}
+          <Card>
+            <CardHeader
+              title="Pending Quests"
+              action={
+                <Button variant="ghost" size="sm" onClick={() => router.push('/quest')}>
+                  View All
+                </Button>
+              }
+            />
+            <CardContent>
+              <div className="space-y-3">
+                {todayQuests.filter(q => !q.is_complete).length === 0 ? (
+                  <div className="text-center py-8">
+                    <TrophyIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">All done!</p>
+                    <p className="text-sm text-gray-400">Great job completing all your quests</p>
+                  </div>
+                ) : (
+                  todayQuests
+                    .filter(q => !q.is_complete)
+                    .slice(0, 5)
+                    .map((quest) => (
+                      <div key={quest.id} className="flex items-start space-x-3">
+                        <div className="w-5 h-5 bg-gray-200 rounded border-2 border-gray-300 flex-shrink-0 mt-0.5"></div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {quest.content}
+                          </p>
+                          {quest.date_due && (
+                            <p className="text-xs text-gray-400 mt-1 flex items-center">
+                              <ClockIcon className="w-3 h-3 mr-1" />
+                              Due: {new Date(quest.date_due).toLocaleDateString()}
+                              {quest.time_due && ` at ${quest.time_due}`}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))
                 )}
               </div>
             </CardContent>

@@ -29,13 +29,11 @@ const QuestPage: React.FC = () => {
   const [questDay, setQuestDay] = useState<QuestDay | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [newTaskContent, setNewTaskContent] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState('');
-  const [newTaskDueTime, setNewTaskDueTime] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showArchive, setShowArchive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -83,28 +81,42 @@ const QuestPage: React.FC = () => {
   }, []);
 
   const handleAddTask = async () => {
-    if (!newTaskContent.trim()) return;
+    if (!newTaskTitle.trim()) return;
 
     try {
       setIsSubmitting(true);
       const questData = {
-        content: newTaskContent.trim(),
-        date_due: newTaskDueDate || undefined,
-        time_due: newTaskDueTime || undefined,
+        content: newTaskTitle.trim(),
       };
 
       await questAPI.createQuest(questData);
       await loadTodayQuests();
       
       // Reset form
-      setNewTaskContent('');
-      setNewTaskDueDate('');
-      setNewTaskDueTime('');
-      setShowAddForm(false);
+      setNewTaskTitle('');
+      setIsCreatingTask(false);
     } catch (err: any) {
       setError(err.message || 'Failed to add task');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleStartCreating = () => {
+    setIsCreatingTask(true);
+    setNewTaskTitle('');
+  };
+
+  const handleCancelCreating = () => {
+    setIsCreatingTask(false);
+    setNewTaskTitle('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAddTask();
+    } else if (e.key === 'Escape') {
+      handleCancelCreating();
     }
   };
 
@@ -304,82 +316,50 @@ const QuestPage: React.FC = () => {
           <CardHeader
             title={`Today's Quests`}
             subtitle={questDay ? `${questDay.completed_count}/${questDay.total_count} completed` : ''}
-            action={
-              <Button
-                onClick={() => setShowAddForm(true)}
-                icon={<PlusIcon className="w-4 h-4" />}
-                size="sm"
-              >
-                Add Task
-              </Button>
-            }
           />
           <CardContent>
-            {/* Add Task Form */}
-            {showAddForm && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
-                <div className="space-y-4">
-                  <Input
-                    label="Task Content"
-                    value={newTaskContent}
-                    onChange={(e) => setNewTaskContent(e.target.value)}
-                    placeholder="What needs to be done?"
-                    autoFocus
-                  />
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      label="Due Date (optional)"
-                      type="date"
-                      value={newTaskDueDate}
-                      onChange={(e) => setNewTaskDueDate(e.target.value)}
-                    />
-                    <Input
-                      label="Due Time (optional)"
-                      type="time"
-                      value={newTaskDueTime}
-                      onChange={(e) => setNewTaskDueTime(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="flex justify-end space-x-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setShowAddForm(false);
-                        setNewTaskContent('');
-                        setNewTaskDueDate('');
-                        setNewTaskDueTime('');
-                      }}
-                      disabled={isSubmitting}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleAddTask}
-                      disabled={!newTaskContent.trim() || isSubmitting}
-                      loading={isSubmitting}
-                    >
-                      Add Quest
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Quest List */}
-            {questDay && questDay.quests.length > 0 ? (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-                modifiers={[restrictToVerticalAxis]}
-              >
-                <SortableContext 
-                  items={questDay.quests.map(q => q.id)} 
-                  strategy={verticalListSortingStrategy}
+            <div className="space-y-2">
+              {/* Inline task creation */}
+              {isCreatingTask && (
+                <div className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
+                  <div className="w-5 h-5 rounded border border-gray-300"></div>
+                  <input
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    onBlur={() => {
+                      if (!newTaskTitle.trim()) {
+                        handleCancelCreating();
+                      } else {
+                        handleAddTask();
+                      }
+                    }}
+                    placeholder="What needs to be done?"
+                    className="flex-1 text-sm border-none outline-none placeholder-gray-400"
+                    autoFocus
+                    disabled={isSubmitting}
+                  />
+                  {isSubmitting && (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                  )}
+                </div>
+              )}
+
+              {/* Existing quests */}
+              {questDay && questDay.quests.length > 0 ? (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToVerticalAxis]}
                 >
-                  <div className="space-y-2">
+                  <SortableContext 
+                    items={questDay.quests.map(q => q.id)} 
+                    strategy={verticalListSortingStrategy}
+                  >
                     {questDay.quests.map((quest) => (
                       <QuestTaskCard
                         key={quest.id}
@@ -390,28 +370,32 @@ const QuestPage: React.FC = () => {
                         dueStatus={getTaskDueStatus(quest)}
                       />
                     ))}
+                  </SortableContext>
+                </DndContext>
+              ) : !isCreatingTask ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-4">
+                    <CheckIcon className="w-12 h-12 mx-auto" />
                   </div>
-                </SortableContext>
-              </DndContext>
-            ) : (
-              <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">
-                  <CheckIcon className="w-16 h-16 mx-auto" />
+                  <p className="text-gray-600 mb-4">
+                    No quests yet. Start by adding your first task.
+                  </p>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No quests yet
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Start your day by adding some tasks to accomplish.
-                </p>
-                <Button
-                  onClick={() => setShowAddForm(true)}
-                  icon={<PlusIcon className="w-4 h-4" />}
+              ) : null}
+
+              {/* Add task button */}
+              {!isCreatingTask && (
+                <button
+                  onClick={handleStartCreating}
+                  className="flex items-center gap-3 p-3 w-full text-left bg-gray-50 hover:bg-gray-100 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg transition-colors group"
                 >
-                  Add Your First Quest
-                </Button>
-              </div>
-            )}
+                  <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+                  <span className="text-sm text-gray-500 group-hover:text-gray-700">
+                    Add a quest
+                  </span>
+                </button>
+              )}
+            </div>
           </CardContent>
         </Card>
         )}
