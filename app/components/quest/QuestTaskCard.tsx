@@ -74,13 +74,13 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
   const getDueStatusColor = () => {
     switch (dueStatus) {
       case 'overdue':
-        return 'text-red-600 bg-red-50 border-red-200';
+        return 'text-destructive bg-destructive/10 border-destructive/20';
       case 'due-today':
-        return 'text-orange-600 bg-orange-50 border-orange-200';
+        return 'text-orange-400 bg-orange-500/10 border-orange-500/20';
       case 'future':
-        return 'text-blue-600 bg-blue-50 border-blue-200';
+        return 'text-accent bg-accent/10 border-accent/20';
       default:
-        return 'text-muted-foreground bg-gray-50 border-gray-200';
+        return 'text-muted-foreground bg-muted/50 border-border';
     }
   };
 
@@ -102,10 +102,10 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
       ref={setNodeRef}
       style={style}
       className={`
-        group flex items-center space-x-3 p-4 bg-white border rounded-lg
+        group flex items-center space-x-3 p-4 bg-card border rounded-lg
         transition-all duration-200 hover:shadow-md
-        ${quest.is_complete ? 'bg-gray-50 border-gray-200' : 'border-gray-300'}
-        ${isDragging ? 'shadow-lg ring-2 ring-blue-500' : ''}
+        ${quest.is_complete ? 'bg-muted/50 border-border' : 'border-border'}
+        ${isDragging ? 'shadow-lg ring-2 ring-accent' : ''}
       `}
     >
       {/* Drag Handle */}
@@ -114,7 +114,7 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
         {...listeners}
         className="flex-shrink-0 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        <Bars3Icon className="w-5 h-5 text-gray-400" />
+        <Bars3Icon className="w-5 h-5 text-muted-foreground" />
       </div>
 
       {/* Completion Checkbox */}
@@ -124,8 +124,8 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
           flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center
           transition-all duration-200
           ${quest.is_complete
-            ? 'bg-green-500 border-green-500 text-white'
-            : 'border-gray-300 hover:border-green-400'
+            ? 'bg-accent border-accent text-accent-foreground'
+            : 'border-border hover:border-accent'
           }
         `}
       >
@@ -179,7 +179,7 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
               className={`text-sm ${
                 quest.is_complete
                   ? 'line-through text-muted-foreground'
-                  : 'text-gray-900'
+                  : 'text-foreground'
               }`}
             >
               {quest.content}
@@ -204,13 +204,13 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
         <div className="flex-shrink-0 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => setIsEditing(true)}
-            className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+            className="p-1 text-muted-foreground hover:text-accent transition-colors"
           >
             <PencilIcon className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDelete(quest.id)}
-            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+            className="p-1 text-muted-foreground hover:text-destructive transition-colors"
           >
             <TrashIcon className="w-4 h-4" />
           </button>

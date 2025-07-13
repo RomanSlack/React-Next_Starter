@@ -241,7 +241,7 @@ const QuestPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Quest</h1>
-            <p className="mt-1 text-lg text-gray-600">
+            <p className="mt-1 text-lg text-muted-foreground">
               {questDay ? (() => {
                 const questDate = new Date(questDay.date);
                 const today = new Date();
@@ -290,7 +290,7 @@ const QuestPage: React.FC = () => {
 
         {error && (
           <div className="p-4 bg-destructive/10 border border-destructive rounded-lg">
-            <p className="text-red-700">{error}</p>
+            <p className="text-destructive">{error}</p>
             <Button
               variant="ghost"
               size="sm"
@@ -374,10 +374,10 @@ const QuestPage: React.FC = () => {
                 </DndContext>
               ) : !isCreatingTask ? (
                 <div className="text-center py-8">
-                  <div className="text-gray-400 mb-4">
+                  <div className="text-muted-foreground mb-4">
                     <CheckIcon className="w-12 h-12 mx-auto" />
                   </div>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     No quests yet. Start by adding your first task.
                   </p>
                 </div>
@@ -389,8 +389,8 @@ const QuestPage: React.FC = () => {
                   onClick={handleStartCreating}
                   className="flex items-center gap-3 p-3 w-full text-left bg-muted hover:bg-muted/80 border border-dashed border-border hover:border-accent rounded-lg transition-colors group"
                 >
-                  <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
-                  <span className="text-sm text-gray-500 group-hover:text-gray-700">
+                  <PlusIcon className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground">
                     Add a quest
                   </span>
                 </button>
@@ -410,25 +410,25 @@ const QuestPage: React.FC = () => {
                     <div className="text-2xl font-bold text-green-600">
                       {questDay.completed_count}
                     </div>
-                    <div className="text-sm text-gray-600">Completed</div>
+                    <div className="text-sm text-muted-foreground">Completed</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">
                       {questDay.pending_count}
                     </div>
-                    <div className="text-sm text-gray-600">Remaining</div>
+                    <div className="text-sm text-muted-foreground">Remaining</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-foreground">
                       {Math.round((questDay.completed_count / questDay.total_count) * 100)}%
                     </div>
-                    <div className="text-sm text-gray-600">Progress</div>
+                    <div className="text-sm text-muted-foreground">Progress</div>
                   </div>
                 </div>
                 
-                <div className="w-48 bg-gray-200 rounded-full h-4">
+                <div className="w-48 bg-muted rounded-full h-4">
                   <div
-                    className="bg-green-500 h-4 rounded-full transition-all duration-300"
+                    className="bg-accent h-4 rounded-full transition-all duration-300"
                     style={{
                       width: `${(questDay.completed_count / questDay.total_count) * 100}%`
                     }}
