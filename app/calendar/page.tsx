@@ -206,7 +206,14 @@ const CalendarPage: React.FC = () => {
       const eventStart = new Date(event.start_datetime);
       const eventDate = eventStart.toISOString().split('T')[0];
       const currentDate = date.toISOString().split('T')[0];
-      const eventHour = eventStart.getHours();
+      
+      // Convert to Eastern Time for hour comparison
+      const easternFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour: 'numeric',
+        hour12: false
+      });
+      const eventHour = parseInt(easternFormatter.format(eventStart));
       
       return eventDate === currentDate && eventHour === hour;
     });
@@ -557,7 +564,7 @@ const CalendarPage: React.FC = () => {
                             const timeStr = eventDate.toLocaleTimeString([], { 
                               hour: '2-digit', 
                               minute: '2-digit',
-                              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                              timeZone: 'America/New_York' // Default to Eastern Time
                             });
                             return (
                               <div

@@ -876,7 +876,11 @@ const DashboardPage: React.FC = () => {
                   upcomingEvents.map((event) => {
                     const eventDate = new Date(event.start_datetime);
                     const dateStr = eventDate.toLocaleDateString();
-                    const timeStr = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const timeStr = eventDate.toLocaleTimeString([], { 
+                      hour: '2-digit', 
+                      minute: '2-digit',
+                      timeZone: 'America/New_York' // Default to Eastern Time
+                    });
                     
                     return (
                       <div key={event.id} className="flex items-center space-x-3">
