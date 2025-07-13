@@ -49,70 +49,70 @@ const DashboardPage: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [quickAddStatus, setQuickAddStatus] = useState<'idle' | 'recording' | 'processing' | 'success' | 'error'>('idle');
   const [transcript, setTranscript] = useState('');
-  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     fetchDashboardData();
-    initializeSpeechRecognition();
     
     return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
+      // Cleanup media recorder and stream
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
 
-  const initializeSpeechRecognition = () => {
-    console.log('Initializing speech recognition...');
-    console.log('Window available:', typeof window !== 'undefined');
-    console.log('webkitSpeechRecognition available:', typeof window !== 'undefined' && 'webkitSpeechRecognition' in window);
-    console.log('SpeechRecognition available:', typeof window !== 'undefined' && 'SpeechRecognition' in window);
-    
-    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
-      recognitionRef.current.lang = 'en-US';
-
-      recognitionRef.current.onresult = (event: any) => {
-        let finalTranscript = '';
-        let interimTranscript = '';
-        
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
+  const initializeAudioRecording = async () => {
+    try {
+      console.log('Initializing audio recording...');
+      
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      
+      // Create MediaRecorder
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
+      // Set up event handlers
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
-        
-        // Update transcript with final results
-        if (finalTranscript) {
-          console.log('Final transcript chunk:', finalTranscript);
-          setTranscript(prev => (prev + ' ' + finalTranscript).trim());
-        }
-        
-        console.log('Current full transcript:', transcript + ' ' + finalTranscript + interimTranscript);
-      };
-
-      recognitionRef.current.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        setQuickAddStatus('error');
-        setIsRecording(false);
-        setTimeout(() => setQuickAddStatus('idle'), 2000);
       };
       
-      recognitionRef.current.onstart = () => {
-        console.log('Speech recognition started');
-        setIsRecording(true);
-        setTranscript(''); // Clear transcript when starting
-      };
-
-      recognitionRef.current.onend = () => {
-        console.log('Speech recognition ended, final transcript:', transcript);
+      mediaRecorderRef.current.onstop = () => {
+        console.log('Recording stopped, processing audio...');
         setIsRecording(false);
+        setQuickAddStatus('processing');
+        
+        // Create audio blob from chunks
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' });
+        audioChunksRef.current = []; // Clear chunks
+        
+        // Send to backend for transcription
+        transcribeAudio(audioBlob);
       };
+      
+      mediaRecorderRef.current.onstart = () => {
+        console.log('Recording started');
+        setIsRecording(true);
+        setTranscript(''); // Clear previous transcript
+        audioChunksRef.current = []; // Clear audio chunks
+      };
+      
+      console.log('Audio recording initialized successfully');
+      return true;
+      
+    } catch (error) {
+      console.error('Failed to initialize audio recording:', error);
+      return false;
     }
   };
 
@@ -192,13 +192,13 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleQuickAdd = () => {
+  const handleQuickAdd = async () => {
     console.log('Quick Add clicked, current status:', quickAddStatus);
-    console.log('Recognition ref available:', !!recognitionRef.current);
     
     if (quickAddStatus === 'idle') {
-      if (!recognitionRef.current) {
-        console.error('Speech recognition not available');
+      const initialized = await initializeAudioRecording();
+      if (!initialized) {
+        console.error('Audio recording not available');
         setQuickAddStatus('error');
         setTimeout(() => setQuickAddStatus('idle'), 2000);
         return;
@@ -211,44 +211,86 @@ const DashboardPage: React.FC = () => {
 
   const startVoiceRecording = () => {
     console.log('Starting voice recording...');
-    if (recognitionRef.current) {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'inactive') {
       try {
-        setTranscript('');
         setQuickAddStatus('recording');
-        setIsRecording(true);
-        recognitionRef.current.start();
-        console.log('Speech recognition started successfully');
+        mediaRecorderRef.current.start();
+        console.log('Audio recording started successfully');
       } catch (error) {
-        console.error('Error starting speech recognition:', error);
+        console.error('Error starting audio recording:', error);
         setQuickAddStatus('error');
         setIsRecording(false);
         setTimeout(() => setQuickAddStatus('idle'), 2000);
       }
     } else {
-      console.error('Recognition ref not available in startVoiceRecording');
+      console.error('MediaRecorder not available or already recording');
     }
   };
 
   const stopVoiceRecording = () => {
-    console.log('Stopping voice recording, current transcript:', transcript);
-    if (recognitionRef.current && isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-      setQuickAddStatus('processing');
+    console.log('Stopping voice recording...');
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      console.log('Audio recording stopped, processing audio...');
+    } else {
+      console.error('MediaRecorder not available or not recording');
+    }
+  };
+
+  const transcribeAudio = async (audioBlob: Blob) => {
+    console.log('Transcribing audio blob, size:', audioBlob.size);
+    
+    try {
+      // Convert blob to file for the API client
+      const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
       
-      // Wait a moment for final transcript to be processed, then use the current transcript
-      setTimeout(() => {
-        const finalTranscript = transcript.trim();
-        console.log('Processing final transcript:', finalTranscript);
+      // Create FormData to send audio file  
+      const formData = new FormData();
+      formData.append('audio_file', audioFile);
+      
+      // Get API base URL
+      const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('auth_token');
+      
+      // Send to backend for transcription
+      const response = await fetch(`${baseURL}/api/ai/transcribe`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Transcription failed: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('Transcription result:', result);
+      
+      if (result.success && result.transcript) {
+        const transcriptText = result.transcript.trim();
+        setTranscript(transcriptText);
+        console.log('Transcription successful:', transcriptText);
         
-        if (finalTranscript) {
-          processVoiceInput(finalTranscript);
-        } else {
-          console.log('No transcript to process');
-          setQuickAddStatus('error');
-          setTimeout(() => setQuickAddStatus('idle'), 2000);
-        }
-      }, 500);
+        // Process the transcribed text with AI
+        processVoiceInput(transcriptText);
+      } else {
+        console.error('No transcript received');
+        setQuickAddStatus('error');
+        setTimeout(() => {
+          setQuickAddStatus('idle');
+          setTranscript('');
+        }, 2000);
+      }
+      
+    } catch (error) {
+      console.error('Failed to transcribe audio:', error);
+      setQuickAddStatus('error');
+      setTimeout(() => {
+        setQuickAddStatus('idle');
+        setTranscript('');
+      }, 2000);
     }
   };
 
