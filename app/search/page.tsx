@@ -16,6 +16,7 @@ import {
   TagIcon,
   AdjustmentsHorizontalIcon,
   XMarkIcon,
+  TrophyIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { searchAPI, SearchResult, SearchResponse } from '@/app/lib/api/search';
@@ -27,7 +28,7 @@ const SearchPage: React.FC = () => {
   const { searchQuery, setSearchQuery } = useAppStore();
   
   const [currentQuery, setCurrentQuery] = useState('');
-  const [searchType, setSearchType] = useState<'all' | 'boards' | 'cards' | 'calendar' | 'journal'>('all');
+  const [searchType, setSearchType] = useState<'all' | 'boards' | 'cards' | 'calendar' | 'journal' | 'quests'>('all');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +43,7 @@ const SearchPage: React.FC = () => {
     if (query) {
       setCurrentQuery(query);
       setSearchQuery(query);
-      if (type && ['all', 'boards', 'cards', 'calendar', 'journal'].includes(type)) {
+      if (type && ['all', 'boards', 'cards', 'calendar', 'journal', 'quests'].includes(type)) {
         setSearchType(type);
       }
       performSearch(query, type || 'all');
@@ -117,6 +118,8 @@ const SearchPage: React.FC = () => {
         return <CalendarIcon className="w-5 h-5 text-purple-600" />;
       case 'journal_entry':
         return <BookOpenIcon className="w-5 h-5 text-orange-600" />;
+      case 'quest':
+        return <TrophyIcon className="w-5 h-5 text-yellow-600" />;
       default:
         return <DocumentTextIcon className="w-5 h-5 text-gray-600" />;
     }
@@ -132,6 +135,8 @@ const SearchPage: React.FC = () => {
         return 'Event';
       case 'journal_entry':
         return 'Journal';
+      case 'quest':
+        return 'Quest';
       default:
         return 'Item';
     }
@@ -166,6 +171,21 @@ const SearchPage: React.FC = () => {
             )}
           </div>
         );
+      case 'quest':
+        return (
+          <div className="flex items-center space-x-4 text-xs text-gray-500">
+            <span>{result.metadata.is_complete ? '✅ Completed' : '⏳ Pending'}</span>
+            {result.metadata.date_created && (
+              <span>Created: {new Date(result.metadata.date_created).toLocaleDateString()}</span>
+            )}
+            {result.metadata.date_due && (
+              <span>Due: {new Date(result.metadata.date_due).toLocaleDateString()}</span>
+            )}
+            {result.metadata.time_due && (
+              <span>at {result.metadata.time_due}</span>
+            )}
+          </div>
+        );
       default:
         return null;
     }
@@ -177,6 +197,7 @@ const SearchPage: React.FC = () => {
     { value: 'cards', label: 'Cards', icon: <DocumentTextIcon className="w-4 h-4" /> },
     { value: 'calendar', label: 'Events', icon: <CalendarIcon className="w-4 h-4" /> },
     { value: 'journal', label: 'Journal', icon: <BookOpenIcon className="w-4 h-4" /> },
+    { value: 'quests', label: 'Quests', icon: <TrophyIcon className="w-4 h-4" /> },
   ];
 
   return (
@@ -187,7 +208,7 @@ const SearchPage: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-neutral-300">Search</h1>
             <p className="mt-1 text-lg text-gray-600">
-              Find your content across boards, calendar, and journal
+              Find your content across boards, calendar, journal, and quests
             </p>
           </div>
           
@@ -195,7 +216,7 @@ const SearchPage: React.FC = () => {
             variant="ghost"
             icon={<AdjustmentsHorizontalIcon className="w-5 h-5" />}
             onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? 'bg-gray-100' : ''}
+            className={showFilters ? 'bg-neutral-600' : ''}
           >
             Filters
           </Button>
@@ -209,7 +230,7 @@ const SearchPage: React.FC = () => {
                 <div className="flex-1">
                   <Input
                     type="text"
-                    placeholder="Search boards, cards, events, journal entries..."
+                    placeholder="Search boards, cards, events, journal entries, quests..."
                     value={currentQuery}
                     onChange={(e) => setCurrentQuery(e.target.value)}
                     icon={<MagnifyingGlassIcon className="w-5 h-5" />}
@@ -289,22 +310,23 @@ const SearchPage: React.FC = () => {
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900 truncate">
+                            <h3 className="text-lg font-semibold text-gray-200 truncate">
                               {result.title}
                             </h3>
                             <span className={cn(
                               'px-2 py-1 text-xs font-medium rounded-full',
                               result.type === 'board' && 'bg-blue-100 text-blue-700',
                               result.type === 'card' && 'bg-green-100 text-green-700',
-                              result.type === 'calendar_event' && 'bg-purple-100 text-purple-700',
-                              result.type === 'journal_entry' && 'bg-orange-100 text-orange-700'
+                              result.type === 'calendar_event' && 'bg-purple-100 text-purple-600',
+                              result.type === 'journal_entry' && 'bg-orange-100 text-orange-700',
+                              result.type === 'quest' && 'bg-yellow-100 text-yellow-700'
                             )}>
                               {getResultTypeLabel(result.type)}
                             </span>
                           </div>
                           
                           {result.description && (
-                            <p className="text-gray-700 mb-3 line-clamp-2">
+                            <p className="text-neutral-300 mb-3 line-clamp-2">
                               {result.description}
                             </p>
                           )}
@@ -377,15 +399,15 @@ const SearchPage: React.FC = () => {
                 <MagnifyingGlassIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Search your content</h3>
                 <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                  Enter a search query above to find boards, cards, calendar events, and journal entries.
+                  Enter a search query above to find boards, cards, calendar events, journal entries, and quests.
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-lg mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-4xl mx-auto">
                   {typeFilters.slice(1).map((filter) => (
                     <div
                       key={filter.value}
                       className="flex flex-col items-center p-4 bg-gray-50 rounded-lg"
                     >
-                      <div className="text-gray-400 mb-2">
+                      <div className="text-gray-200 mb-2">
                         {filter.icon}
                       </div>
                       <span className="text-sm text-gray-600">{filter.label}</span>
