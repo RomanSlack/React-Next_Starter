@@ -21,6 +21,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, className }) => {
   const { isAuthenticated, isInitialized } = useAuthStore();
   const { sidebarOpen } = useAppStore();
   
+  // Only show React Query DevTools in development when explicitly enabled
+  const showRQDevtools = process.env.NEXT_PUBLIC_SHOW_RQ_DEVTOOLS === 'true';
+  
   useEffect(() => {
     // Only redirect after initialization is complete
     if (isInitialized && !isAuthenticated) {
@@ -75,8 +78,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, className }) => {
         <NotificationContainer />
       </div>
       
-      {/* React Query DevTools */}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* React Query DevTools - Only show when explicitly enabled */}
+      {showRQDevtools && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
 };

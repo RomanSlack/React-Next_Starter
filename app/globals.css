@@ -115,4 +115,34 @@
   .quest-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: rgba(156, 163, 175, 0.5);
   }
+
+  /* ─── Hide Next.js Development Overlays ─────────────────────────── */
+  /* Hide Next.js portal container (development indicators) */
+  nextjs-portal {
+    display: none !important;
+  }
+
+  /* Hide React error overlay iframe */
+  body > iframe {
+    display: none !important;
+  }
+
+  /* Prevent body modifications from dev tools */
+  body {
+    padding: 0 !important;
+    overflow: auto !important;
+  }
+
+  /* Hide any __next development containers */
+  [data-nextjs-dialog],
+  [data-nextjs-dialog-overlay],
+  [data-nextjs-toast] {
+    display: none !important;
+  }
+
+  /* Hide React DevTools if present */
+  #react-devtools-container,
+  [data-react-devtools] {
+    display: none !important;
+  }
 }
