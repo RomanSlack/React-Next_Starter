@@ -12,10 +12,11 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   SparklesIcon,
+  TrophyIcon,
 } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils';
-import { useAppStore } from '@/lib/stores/app';
-import { useAuthStore } from '@/lib/stores/auth';
+import { cn } from '@/app/lib/utils/cn';
+import { useAppStore } from '@/app/lib/stores/app';
+import { useAuthStore } from '@/app/lib/stores/auth';
 import { Avatar } from '@/app/components/ui/Avatar';
 
 const navigation = [
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Boards', href: '/boards', icon: RectangleStackIcon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
+  { name: 'Quest', href: '/quest', icon: TrophyIcon },
   { name: 'AI Mode', href: '/ai-mode', icon: SparklesIcon },
   { name: 'Settings', href: '/settings', icon: CogIcon },
 ];
