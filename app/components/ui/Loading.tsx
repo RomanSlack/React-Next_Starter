@@ -26,7 +26,7 @@ const Loading: React.FC<LoadingProps> = ({
   
   const colors = {
     primary: 'text-grape-600',
-    secondary: 'text-gray-600',
+    secondary: 'text-muted-foreground',
     white: 'text-white',
     gray: 'text-gray-400',
   };

@@ -304,7 +304,7 @@ const BoardDetailPage: React.FC = () => {
                 </div>
               ) : (
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{board.title}</h1>
+                  <h1 className="text-3xl font-bold text-foreground">{board.title}</h1>
                   <p className="text-gray-600">{board.description}</p>
                 </div>
               )}
@@ -402,7 +402,7 @@ const BoardDetailPage: React.FC = () => {
                     className="w-3 h-3 rounded-full" 
                     style={{ backgroundColor: column.color }}
                   />
-                  <h3 className="font-medium text-gray-900">{column.title}</h3>
+                  <h3 className="font-medium text-foreground">{column.title}</h3>
                   <span className="text-sm text-gray-500">
                     ({getCardsByStatus(column.id).length})
                   </span>
@@ -508,7 +508,7 @@ const BoardDetailPage: React.FC = () => {
                     ) : (
                       <>
                         <div className="flex items-start justify-between mb-2">
-                          <h4 className="font-medium text-gray-900 flex-1">{card.title}</h4>
+                          <h4 className="font-medium text-foreground flex-1">{card.title}</h4>
                           <div className="flex items-center space-x-1">
                             <Button
                               size="sm"

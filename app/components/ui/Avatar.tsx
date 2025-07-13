@@ -59,20 +59,15 @@ const Avatar: React.FC<AvatarProps> = ({
   };
   
   const getRandomColor = (name: string) => {
-    if (fallbackColor === 'primary') return 'bg-grape-500';
-    if (fallbackColor === 'secondary') return 'bg-gray-500';
+    if (fallbackColor === 'primary') return 'bg-accent';
+    if (fallbackColor === 'secondary') return 'bg-muted-foreground';
     
     const colors = [
-      'bg-red-500',
-      'bg-orange-500',
-      'bg-yellow-500',
-      'bg-green-500',
-      'bg-blue-500',
-      'bg-indigo-500',
-      'bg-purple-500',
-      'bg-pink-500',
-      'bg-teal-500',
-      'bg-cyan-500',
+      'bg-accent',
+      'bg-accent/80',
+      'bg-accent/60',
+      'bg-muted-foreground',
+      'bg-secondary',
     ];
     
     const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -82,19 +77,19 @@ const Avatar: React.FC<AvatarProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return 'bg-green-500';
+        return 'bg-accent';
       case 'away':
-        return 'bg-yellow-500';
+        return 'bg-accent/60';
       case 'busy':
-        return 'bg-red-500';
+        return 'bg-destructive';
       default:
-        return 'bg-gray-400';
+        return 'bg-muted-foreground';
     }
   };
   
   const displayName = alt || name || 'User';
   const initials = name ? getInitials(name) : '?';
-  const fallbackBg = name ? getRandomColor(name) : 'bg-gray-500';
+  const fallbackBg = name ? getRandomColor(name) : 'bg-muted-foreground';
   
   return (
     <div className={cn('relative inline-block', className)}>
@@ -127,7 +122,7 @@ const Avatar: React.FC<AvatarProps> = ({
       {status && (
         <div
           className={cn(
-            'absolute bottom-0 right-0 rounded-full border-2 border-white',
+            'absolute bottom-0 right-0 rounded-full border-2 border-background',
             statusSizes[size],
             getStatusColor(status)
           )}
@@ -172,7 +167,7 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({
         <div
           key={index}
           className={cn(
-            'ring-2 ring-white rounded-full',
+            'ring-2 ring-background rounded-full',
             index > 0 && spacings[spacing]
           )}
         >
@@ -188,7 +183,7 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({
       {remainingCount > 0 && (
         <div
           className={cn(
-            'ring-2 ring-white rounded-full',
+            'ring-2 ring-background rounded-full',
             spacings[spacing]
           )}
         >

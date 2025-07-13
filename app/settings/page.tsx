@@ -35,8 +35,8 @@ const SettingsPage: React.FC = () => {
       <div className="p-6 max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="mt-1 text-lg text-gray-600">
+          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+          <p className="mt-1 text-lg text-muted-foreground">
             Manage your account settings and preferences.
           </p>
         </div>
@@ -62,7 +62,7 @@ const SettingsPage: React.FC = () => {
                   <Button variant="outline" size="sm">
                     Change Photo
                   </Button>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     JPG, GIF or PNG. 1MB max.
                   </p>
                 </div>
@@ -104,7 +104,7 @@ const SettingsPage: React.FC = () => {
             <div className="space-y-6">
               {/* Theme Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-foreground mb-3">
                   Theme
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -114,8 +114,8 @@ const SettingsPage: React.FC = () => {
                       onClick={() => setTheme(themeOption as any)}
                       className={`p-3 border rounded-lg text-center transition-colors ${
                         theme === themeOption
-                          ? 'border-grape-500 bg-grape-50 text-grape-700'
-                          : 'border-gray-300 hover:border-gray-400'
+                          ? 'border-accent bg-accent/10 text-accent'
+                          : 'border-border hover:border-accent/50'
                       }`}
                     >
                       <div className="capitalize font-medium">{themeOption}</div>
@@ -126,7 +126,7 @@ const SettingsPage: React.FC = () => {
               
               {/* Accent Color */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-foreground mb-3">
                   Accent Color
                 </label>
                 <div className="flex space-x-3">
@@ -170,12 +170,12 @@ const SettingsPage: React.FC = () => {
                 <div key={setting.name} className="flex items-center justify-between">
                   <div>
                     <h4 className="text-sm font-medium text-gray-900">{setting.name}</h4>
-                    <p className="text-sm text-gray-500">{setting.description}</p>
+                    <p className="text-sm text-muted-foreground">{setting.description}</p>
                   </div>
                   <input
                     type="checkbox"
                     defaultChecked
-                    className="h-4 w-4 text-grape-600 focus:ring-grape-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-accent focus:ring-accent border-border rounded"
                   />
                 </div>
               ))}
@@ -197,7 +197,7 @@ const SettingsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-medium text-gray-900">Password</h4>
-                  <p className="text-sm text-gray-500">Last changed 3 months ago</p>
+                  <p className="text-sm text-muted-foreground">Last changed 3 months ago</p>
                 </div>
                 <Button variant="outline" size="sm">
                   Change Password
@@ -207,7 +207,7 @@ const SettingsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-medium text-gray-900">Two-factor authentication</h4>
-                  <p className="text-sm text-gray-500">Add an extra layer of security</p>
+                  <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
                 </div>
                 <Button variant="outline" size="sm">
                   Enable
@@ -217,7 +217,7 @@ const SettingsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-medium text-gray-900">Active sessions</h4>
-                  <p className="text-sm text-gray-500">Manage your active sessions</p>
+                  <p className="text-sm text-muted-foreground">Manage your active sessions</p>
                 </div>
                 <Button variant="outline" size="sm">
                   View Sessions
@@ -238,7 +238,7 @@ const SettingsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-medium text-red-900">Export your data</h4>
-                  <p className="text-sm text-gray-500">Download a copy of all your data</p>
+                  <p className="text-sm text-muted-foreground">Download a copy of all your data</p>
                 </div>
                 <Button variant="outline" size="sm">
                   Export Data
@@ -248,7 +248,7 @@ const SettingsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-medium text-red-900">Clear all account data</h4>
-                  <p className="text-sm text-gray-500">Delete all boards, calendar events, journal entries, and AI history</p>
+                  <p className="text-sm text-muted-foreground">Delete all boards, calendar events, journal entries, and AI history</p>
                 </div>
                 <Button 
                   variant="destructive" 
@@ -262,7 +262,7 @@ const SettingsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-medium text-red-900">Delete account</h4>
-                  <p className="text-sm text-gray-500">Permanently delete your account and all data</p>
+                  <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
                 </div>
                 <Button variant="destructive" size="sm">
                   Delete Account

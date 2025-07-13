@@ -240,7 +240,7 @@ const QuestPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Quest</h1>
+            <h1 className="text-3xl font-bold text-foreground">Quest</h1>
             <p className="mt-1 text-lg text-gray-600">
               {questDay ? (() => {
                 const questDate = new Date(questDay.date);
@@ -289,7 +289,7 @@ const QuestPage: React.FC = () => {
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="p-4 bg-destructive/10 border border-destructive rounded-lg">
             <p className="text-red-700">{error}</p>
             <Button
               variant="ghost"
@@ -323,8 +323,8 @@ const QuestPage: React.FC = () => {
             <div className="space-y-2">
               {/* Inline task creation */}
               {isCreatingTask && (
-                <div className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="w-5 h-5 rounded border border-gray-300"></div>
+                <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg shadow-sm">
+                  <div className="w-5 h-5 rounded border border-border"></div>
                   <input
                     type="text"
                     value={newTaskTitle}
@@ -338,12 +338,12 @@ const QuestPage: React.FC = () => {
                       }
                     }}
                     placeholder="What needs to be done?"
-                    className="flex-1 text-sm border-none outline-none placeholder-gray-400"
+                    className="flex-1 text-sm border-none outline-none placeholder-muted-foreground bg-transparent text-foreground"
                     autoFocus
                     disabled={isSubmitting}
                   />
                   {isSubmitting && (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent"></div>
                   )}
                 </div>
               )}
@@ -387,7 +387,7 @@ const QuestPage: React.FC = () => {
               {!isCreatingTask && (
                 <button
                   onClick={handleStartCreating}
-                  className="flex items-center gap-3 p-3 w-full text-left bg-gray-50 hover:bg-gray-100 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg transition-colors group"
+                  className="flex items-center gap-3 p-3 w-full text-left bg-muted hover:bg-muted/80 border border-dashed border-border hover:border-accent rounded-lg transition-colors group"
                 >
                   <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
                   <span className="text-sm text-gray-500 group-hover:text-gray-700">
@@ -419,7 +419,7 @@ const QuestPage: React.FC = () => {
                     <div className="text-sm text-gray-600">Remaining</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-foreground">
                       {Math.round((questDay.completed_count / questDay.total_count) * 100)}%
                     </div>
                     <div className="text-sm text-gray-600">Progress</div>

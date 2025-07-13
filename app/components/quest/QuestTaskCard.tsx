@@ -80,7 +80,7 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
       case 'future':
         return 'text-blue-600 bg-blue-50 border-blue-200';
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return 'text-muted-foreground bg-gray-50 border-gray-200';
     }
   };
 
@@ -178,7 +178,7 @@ const QuestTaskCard: React.FC<QuestTaskCardProps> = ({
             <p
               className={`text-sm ${
                 quest.is_complete
-                  ? 'line-through text-gray-500'
+                  ? 'line-through text-muted-foreground'
                   : 'text-gray-900'
               }`}
             >

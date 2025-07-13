@@ -118,7 +118,7 @@ const BoardsPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Boards</h1>
+            <h1 className="text-3xl font-bold text-foreground">Boards</h1>
             <p className="mt-1 text-lg text-gray-600">
               Organize your projects with Kanban boards
             </p>
@@ -139,7 +139,7 @@ const BoardsPage: React.FC = () => {
           <Card className="mb-6 border-grape-200">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Create New Board</h3>
+                <h3 className="text-lg font-semibold text-foreground">Create New Board</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -227,7 +227,7 @@ const BoardsPage: React.FC = () => {
           <section>
             <div className="flex items-center space-x-2 mb-4">
               <StarIconSolid className="w-5 h-5 text-yellow-500" />
-              <h2 className="text-xl font-semibold text-gray-900">Starred Boards</h2>
+              <h2 className="text-xl font-semibold text-foreground">Starred Boards</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -262,7 +262,7 @@ const BoardsPage: React.FC = () => {
                         </div>
                       </div>
                       
-                      <h3 className="text-lg font-semibold text-gray-900 mt-3">
+                      <h3 className="text-lg font-semibold text-foreground mt-3">
                         {board.title}
                       </h3>
                       <p className="text-sm text-gray-600 line-clamp-2">
@@ -335,7 +335,7 @@ const BoardsPage: React.FC = () => {
 
         {/* Recent Boards */}
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Boards</h2>
+          <h2 className="text-xl font-semibold text-foreground mb-4">Your Boards</h2>
           
           {loading ? (
             <Card>
@@ -351,7 +351,7 @@ const BoardsPage: React.FC = () => {
               <CardContent padding="xl">
                 <div className="text-center py-12">
                   <RectangleStackIcon className="w-24 h-24 text-gray-300 mx-auto mb-6" />
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">No boards yet</h3>
+                  <h3 className="text-xl font-medium text-foreground mb-2">No boards yet</h3>
                   <p className="text-gray-500 mb-6 max-w-md mx-auto">
                     Get organized by creating your first Kanban board. Track tasks, manage projects, and collaborate with your team.
                   </p>
@@ -399,7 +399,7 @@ const BoardsPage: React.FC = () => {
                         </div>
                       </div>
                       
-                      <h3 className="text-lg font-semibold text-gray-900 mt-3">
+                      <h3 className="text-lg font-semibold text-foreground mt-3">
                         {board.title}
                       </h3>
                       <p className="text-sm text-gray-600 line-clamp-2">

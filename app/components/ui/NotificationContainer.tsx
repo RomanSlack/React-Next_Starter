@@ -17,26 +17,26 @@ const NotificationContainer: React.FC = () => {
   const getIcon = (type: Notification['type']) => {
     switch (type) {
       case 'success':
-        return <CheckCircleIcon className="w-6 h-6 text-green-500" />;
+        return <CheckCircleIcon className="w-6 h-6 text-accent" />;
       case 'error':
-        return <XCircleIcon className="w-6 h-6 text-red-500" />;
+        return <XCircleIcon className="w-6 h-6 text-destructive" />;
       case 'warning':
-        return <ExclamationTriangleIcon className="w-6 h-6 text-yellow-500" />;
+        return <ExclamationTriangleIcon className="w-6 h-6 text-accent/80" />;
       default:
-        return <InformationCircleIcon className="w-6 h-6 text-blue-500" />;
+        return <InformationCircleIcon className="w-6 h-6 text-accent" />;
     }
   };
   
   const getBackgroundColor = (type: Notification['type']) => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200';
+        return 'bg-accent/10 border-accent';
       case 'error':
-        return 'bg-red-50 border-red-200';
+        return 'bg-destructive/10 border-destructive';
       case 'warning':
-        return 'bg-yellow-50 border-yellow-200';
+        return 'bg-accent/5 border-accent/50';
       default:
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-accent/10 border-accent';
     }
   };
   
@@ -64,7 +64,7 @@ const NotificationContainer: React.FC = () => {
                 <h4 className="text-sm font-medium text-gray-900">
                   {notification.title}
                 </h4>
-                <p className="mt-1 text-sm text-gray-700">
+                <p className="mt-1 text-sm text-foreground">
                   {notification.message}
                 </p>
                 
@@ -88,7 +88,7 @@ const NotificationContainer: React.FC = () => {
                   size="sm"
                   onClick={() => removeNotification(notification.id)}
                   icon={<XMarkIcon className="w-4 h-4" />}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-muted-foreground"
                 />
               </div>
             </div>

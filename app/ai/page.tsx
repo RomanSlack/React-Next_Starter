@@ -22,7 +22,7 @@ const AIPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">AI Assistant</h1>
+            <h1 className="text-3xl font-bold text-foreground">AI Assistant</h1>
             <p className="mt-1 text-lg text-gray-600">
               Let AI help you manage your tasks and productivity
             </p>
@@ -45,7 +45,7 @@ const AIPage: React.FC = () => {
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <SparklesIcon className="w-6 h-6 text-purple-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Smart Suggestions</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Smart Suggestions</h3>
                 <p className="text-sm text-gray-600">
                   Get AI-powered suggestions for organizing your tasks and projects
                 </p>
@@ -59,7 +59,7 @@ const AIPage: React.FC = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <CommandLineIcon className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Voice Commands</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Voice Commands</h3>
                 <p className="text-sm text-gray-600">
                   Use natural language to create tasks, schedule events, and more
                 </p>
@@ -73,7 +73,7 @@ const AIPage: React.FC = () => {
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <ClockIcon className="w-6 h-6 text-green-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Time Management</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Time Management</h3>
                 <p className="text-sm text-gray-600">
                   Get insights on your productivity patterns and time usage
                 </p>
@@ -89,7 +89,7 @@ const AIPage: React.FC = () => {
             {commandHistory.length === 0 ? (
               <div className="text-center py-12">
                 <CommandLineIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No commands yet</h3>
+                <h3 className="text-lg font-medium text-foreground mb-2">No commands yet</h3>
                 <p className="text-gray-500 mb-6">
                   Start using AI commands to see your history here. Press Cmd+K to open the command bar.
                 </p>
@@ -106,7 +106,7 @@ const AIPage: React.FC = () => {
                 {commandHistory.map((command) => (
                   <div key={command.id} className="border rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
-                      <p className="font-medium text-gray-900">{command.command}</p>
+                      <p className="font-medium text-foreground">{command.command}</p>
                       <span className="text-xs text-gray-500">{command.timestamp}</span>
                     </div>
                     <p className="text-sm text-gray-600">{command.response}</p>

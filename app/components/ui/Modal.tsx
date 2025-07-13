@@ -89,22 +89,22 @@ const Modal: React.FC<ModalProps> = ({
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'relative w-full bg-white rounded-lg shadow-xl max-h-[90vh] overflow-hidden',
+              'relative w-full bg-background rounded-lg shadow-xl max-h-[90vh] overflow-hidden border border-border',
               sizes[size],
               className
             )}
           >
             {/* Header */}
             {(title || description || showCloseButton) && (
-              <div className="flex items-start justify-between p-6 border-b border-gray-200">
+              <div className="flex items-start justify-between p-6 border-b border-border">
                 <div className="flex-1 min-w-0">
                   {title && (
-                    <h2 className="text-lg font-semibold text-gray-900 truncate">
+                    <h2 className="text-lg font-semibold text-foreground truncate">
                       {title}
                     </h2>
                   )}
                   {description && (
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       {description}
                     </p>
                   )}
@@ -154,7 +154,7 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 pt-4 mt-6 border-t border-gray-200',
+        'flex items-center gap-3 pt-4 mt-6 border-t border-border',
         alignments[align],
         className
       )}

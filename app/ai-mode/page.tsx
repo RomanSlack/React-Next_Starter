@@ -172,23 +172,23 @@ const AIModeePage: React.FC = () => {
 
     return (
       <div className="space-y-3">
-        <div className="text-sm font-medium text-gray-600 flex items-center">
+        <div className="text-sm font-medium text-muted-foreground flex items-center">
           <ClockIcon className="w-4 h-4 mr-2" />
           Actions completed:
         </div>
         {toolCalls.map((call, index) => (
-          <div key={index} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+          <div key={index} className="flex items-start space-x-3 p-3 bg-muted rounded-lg">
             {call.result?.success ? (
-              <CheckCircleIcon className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              <CheckCircleIcon className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
             ) : (
-              <XCircleIcon className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+              <XCircleIcon className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
             )}
             <div className="flex-1">
-              <div className="text-sm font-medium text-gray-900">
+              <div className="text-sm font-medium text-foreground">
                 {call.result?.message || `${call.tool_name} executed`}
               </div>
               {call.result?.result && (
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-muted-foreground mt-1">
                   {JSON.stringify(call.result.result, null, 2)}
                 </div>
               )}
@@ -207,25 +207,25 @@ const AIModeePage: React.FC = () => {
 
   return (
     <AppLayout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         {/* Hero Section */}
         <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
           <div className="w-full max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <SparklesIcon className="w-10 h-10 text-white" />
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold text-foreground mb-4">
                 Welcome to AI Mode
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Tell me what you'd like to do and I'll help you create journal entries, schedule events, manage boards, and more.
               </p>
             </div>
 
             {/* Main Input Card */}
-            <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+            <Card className="shadow-2xl border border-border bg-card/90 backdrop-blur-sm">
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="relative">
@@ -235,7 +235,7 @@ const AIModeePage: React.FC = () => {
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="What would you like me to help you with today? (Press Enter to send, Shift+Enter for new line)"
-                      className="w-full px-6 py-4 pr-16 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 resize-none text-lg placeholder-gray-400 transition-all duration-200"
+                      className="w-full px-6 py-4 pr-16 border-2 border-border rounded-2xl focus:outline-none focus:ring-4 focus:ring-accent/20 focus:border-accent resize-none text-lg placeholder-muted-foreground bg-background text-foreground transition-all duration-200"
                       rows={4}
                       disabled={isLoading}
                     />
@@ -247,8 +247,8 @@ const AIModeePage: React.FC = () => {
                       className={cn(
                         'absolute right-4 top-4 w-10 h-10 p-0 rounded-xl',
                         voiceRecorder.isRecording 
-                          ? 'text-red-500 bg-red-50 animate-pulse' 
-                          : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                          ? 'text-destructive bg-destructive/10 animate-pulse' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                       )}
                       disabled={isLoading}
                     >
@@ -260,7 +260,7 @@ const AIModeePage: React.FC = () => {
                     <Button
                       type="submit"
                       disabled={!input.trim() || isLoading}
-                      className="px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:from-gray-300 disabled:to-gray-400 text-lg font-medium rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105 disabled:scale-100"
+                      className="px-8 py-4 bg-accent hover:bg-accent/90 disabled:bg-muted disabled:text-muted-foreground text-accent-foreground text-lg font-medium rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105 disabled:scale-100"
                       size="lg"
                     >
                       {isLoading ? (
@@ -280,8 +280,8 @@ const AIModeePage: React.FC = () => {
 
                 {voiceRecorder.isRecording && (
                   <div className="mt-4 text-center">
-                    <div className="inline-flex items-center text-red-500 bg-red-50 px-4 py-2 rounded-full text-sm">
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
+                    <div className="inline-flex items-center text-destructive bg-destructive/10 px-4 py-2 rounded-full text-sm">
+                      <div className="w-2 h-2 bg-destructive rounded-full animate-pulse mr-2"></div>
                       Recording... Click the mic to stop
                     </div>
                   </div>
@@ -292,7 +292,7 @@ const AIModeePage: React.FC = () => {
             {/* Quick Suggestions */}
             {!result && quickSuggestions.length > 0 && (
               <div className="mt-8 text-center">
-                <div className="text-sm font-medium text-gray-600 mb-4 flex items-center justify-center">
+                <div className="text-sm font-medium text-muted-foreground mb-4 flex items-center justify-center">
                   <LightBulbIcon className="w-4 h-4 mr-2" />
                   Try these suggestions:
                 </div>
@@ -301,7 +301,7 @@ const AIModeePage: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => useSuggestion(suggestion)}
-                      className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 transition-all duration-200 shadow-sm"
+                      className="px-4 py-2 bg-background border border-border rounded-xl text-sm text-foreground hover:bg-accent/10 hover:border-accent hover:text-accent transition-all duration-200 shadow-sm"
                     >
                       <PlayIcon className="w-3 h-3 inline mr-2" />
                       {suggestion}
@@ -316,17 +316,17 @@ const AIModeePage: React.FC = () => {
               <div className="mt-8">
                 <Card className={cn(
                   "shadow-lg transition-all duration-500 transform scale-100",
-                  result.success ? "border-green-200 bg-green-50/50" : "border-red-200 bg-red-50/50"
+                  result.success ? "border-accent bg-accent/5" : "border-destructive bg-destructive/5"
                 )}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center">
                         {result.success ? (
-                          <CheckCircleIcon className="w-6 h-6 text-green-500 mr-3" />
+                          <CheckCircleIcon className="w-6 h-6 text-accent mr-3" />
                         ) : (
-                          <XCircleIcon className="w-6 h-6 text-red-500 mr-3" />
+                          <XCircleIcon className="w-6 h-6 text-destructive mr-3" />
                         )}
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-foreground">
                           {result.success ? 'Task Completed' : 'Error Occurred'}
                         </h3>
                       </div>
@@ -334,7 +334,7 @@ const AIModeePage: React.FC = () => {
                         variant="ghost"
                         size="sm"
                         onClick={clearResult}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-muted-foreground hover:text-foreground"
                       >
                         ✕
                       </Button>
@@ -342,22 +342,22 @@ const AIModeePage: React.FC = () => {
 
                     {/* Response */}
                     <div className="mb-6">
-                      <div className="text-gray-900 whitespace-pre-wrap leading-relaxed">
+                      <div className="text-foreground whitespace-pre-wrap leading-relaxed">
                         {result.response}
                       </div>
                     </div>
 
                     {/* Tool Calls */}
                     {result.tool_calls && result.tool_calls.length > 0 && (
-                      <div className="border-t border-gray-200 pt-4">
+                      <div className="border-t border-border pt-4">
                         {formatToolCalls(result.tool_calls)}
                       </div>
                     )}
 
                     {/* Error Details */}
                     {result.error && (
-                      <div className="mt-4 p-4 bg-red-100 border border-red-200 rounded-lg">
-                        <div className="text-sm text-red-700">
+                      <div className="mt-4 p-4 bg-destructive/10 border border-destructive rounded-lg">
+                        <div className="text-sm text-destructive">
                           <strong>Error:</strong> {result.error}
                         </div>
                       </div>
@@ -365,8 +365,8 @@ const AIModeePage: React.FC = () => {
 
                     {/* Metadata */}
                     {result.metadata && (
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>
                             Model: {result.metadata.model} • 
                             Tokens: {result.metadata.tokens_used} • 
@@ -383,7 +383,7 @@ const AIModeePage: React.FC = () => {
                   <Button
                     onClick={clearResult}
                     variant="outline"
-                    className="px-6 py-3 border-purple-300 text-purple-700 hover:bg-purple-50"
+                    className="px-6 py-3 border-accent text-accent hover:bg-accent/10"
                   >
                     Try Another Action
                   </Button>
@@ -394,7 +394,7 @@ const AIModeePage: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="py-6 text-center text-sm text-gray-500">
+        <div className="py-6 text-center text-sm text-muted-foreground">
           <p>Powered by AI • Seamlessly integrated with your productivity tools</p>
         </div>
       </div>

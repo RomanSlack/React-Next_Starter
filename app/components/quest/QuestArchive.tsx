@@ -134,7 +134,7 @@ const QuestArchiveComponent: React.FC<QuestArchiveProps> = ({
           <div className="text-center py-12">
             <CalendarIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No quest history yet</h3>
-            <p className="text-gray-600">Start creating quests to build your history.</p>
+            <p className="text-muted-foreground">Start creating quests to build your history.</p>
           </div>
         ) : (
           <>
@@ -158,7 +158,7 @@ const QuestArchiveComponent: React.FC<QuestArchiveProps> = ({
                     />
                   </div>
                   
-                  <div className="text-xs text-gray-600 space-y-1">
+                  <div className="text-xs text-muted-foreground space-y-1">
                     <div className="flex items-center justify-between">
                       <span>Tasks:</span>
                       <span>{day.total_count}</span>
@@ -203,7 +203,7 @@ const QuestArchiveComponent: React.FC<QuestArchiveProps> = ({
                   Previous
                 </Button>
                 
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   Page {currentPage + 1} of {totalPages}
                 </span>
                 
@@ -220,7 +220,7 @@ const QuestArchiveComponent: React.FC<QuestArchiveProps> = ({
 
             {/* Legend */}
             <div className="mt-6 pt-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500 mb-2">Completion Status:</p>
+              <p className="text-xs text-muted-foreground mb-2">Completion Status:</p>
               <div className="flex items-center space-x-4 text-xs">
                 <div className="flex items-center space-x-1">
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>

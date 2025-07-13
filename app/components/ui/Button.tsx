@@ -26,15 +26,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     children,
     ...props
   }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed';
     
     const variants = {
-      primary: 'bg-grape-600 text-white hover:bg-grape-700 focus:ring-grape-500 shadow-sm',
-      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 shadow-sm',
-      outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-500 shadow-sm',
-      ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
-      link: 'text-grape-600 hover:text-grape-700 underline-offset-4 hover:underline focus:ring-grape-500',
-      destructive: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm',
+      primary: 'bg-accent text-accent-foreground hover:bg-accent/90 focus:ring-accent shadow-sm',
+      secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary shadow-sm',
+      outline: 'border border-border bg-background text-foreground hover:bg-muted focus:ring-accent shadow-sm',
+      ghost: 'text-foreground hover:bg-muted focus:ring-accent',
+      link: 'text-accent hover:text-accent/80 underline-offset-4 hover:underline focus:ring-accent',
+      destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive shadow-sm',
     };
     
     const sizes = {

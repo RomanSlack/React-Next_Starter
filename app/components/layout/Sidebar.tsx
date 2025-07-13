@@ -106,7 +106,7 @@ const Sidebar: React.FC = () => {
                       'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
                       active
                         ? 'bg-accent/10 text-accent'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     )}
                   >
                     <item.icon
@@ -222,7 +222,7 @@ const Sidebar: React.FC = () => {
                       'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
                       active
                         ? 'bg-accent/10 text-accent'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     )}
                     onClick={() => setSidebarOpen(false)}
                   >

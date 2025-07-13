@@ -109,7 +109,7 @@ const ClearAccountDataModal: React.FC<ClearAccountDataModalProps> = ({
           </div>
           
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Are you absolutely sure you want to clear all your account data?
             </p>
             
@@ -117,7 +117,7 @@ const ClearAccountDataModal: React.FC<ClearAccountDataModalProps> = ({
               <h4 className="text-sm font-medium text-gray-900 mb-2">
                 This action will:
               </h4>
-              <ul className="text-sm text-gray-700 space-y-1">
+              <ul className="text-sm text-foreground space-y-1">
                 <li>• Delete all your boards, cards, and tasks</li>
                 <li>• Remove all calendar events and reminders</li>
                 <li>• Erase all journal entries and mood data</li>
@@ -184,10 +184,10 @@ const ClearAccountDataModal: React.FC<ClearAccountDataModalProps> = ({
           />
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Confirmation Text
             </label>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               Type <span className="font-mono font-semibold text-red-600">DELETE MY DATA</span> exactly:
             </p>
             <Input
