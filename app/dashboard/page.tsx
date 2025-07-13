@@ -87,10 +87,13 @@ const DashboardPage: React.FC = () => {
           }
         }
         
+        // Update transcript with final results
         if (finalTranscript) {
-          console.log('Final transcript:', finalTranscript);
-          setTranscript(prev => prev + finalTranscript);
+          console.log('Final transcript chunk:', finalTranscript);
+          setTranscript(prev => (prev + ' ' + finalTranscript).trim());
         }
+        
+        console.log('Current full transcript:', transcript + ' ' + finalTranscript + interimTranscript);
       };
 
       recognitionRef.current.onerror = (event: any) => {
@@ -103,16 +106,12 @@ const DashboardPage: React.FC = () => {
       recognitionRef.current.onstart = () => {
         console.log('Speech recognition started');
         setIsRecording(true);
+        setTranscript(''); // Clear transcript when starting
       };
 
       recognitionRef.current.onend = () => {
+        console.log('Speech recognition ended, final transcript:', transcript);
         setIsRecording(false);
-        if (transcript && quickAddStatus === 'recording') {
-          setQuickAddStatus('processing');
-          processVoiceInput(transcript);
-        } else if (quickAddStatus === 'recording') {
-          setQuickAddStatus('idle');
-        }
       };
     }
   };
@@ -231,10 +230,25 @@ const DashboardPage: React.FC = () => {
   };
 
   const stopVoiceRecording = () => {
+    console.log('Stopping voice recording, current transcript:', transcript);
     if (recognitionRef.current && isRecording) {
       recognitionRef.current.stop();
       setIsRecording(false);
-      // Don't change status here, let onend handle it
+      setQuickAddStatus('processing');
+      
+      // Wait a moment for final transcript to be processed, then use the current transcript
+      setTimeout(() => {
+        const finalTranscript = transcript.trim();
+        console.log('Processing final transcript:', finalTranscript);
+        
+        if (finalTranscript) {
+          processVoiceInput(finalTranscript);
+        } else {
+          console.log('No transcript to process');
+          setQuickAddStatus('error');
+          setTimeout(() => setQuickAddStatus('idle'), 2000);
+        }
+      }, 500);
     }
   };
 
@@ -244,7 +258,10 @@ const DashboardPage: React.FC = () => {
     if (!voiceText.trim()) {
       console.log('Empty voice input');
       setQuickAddStatus('error');
-      setTimeout(() => setQuickAddStatus('idle'), 2000);
+      setTimeout(() => {
+        setQuickAddStatus('idle');
+        setTranscript('');
+      }, 2000);
       return;
     }
 
@@ -255,12 +272,16 @@ const DashboardPage: React.FC = () => {
       const response = await aiAPI.sendMessage(voiceText.trim());
       console.log('AI API response:', response);
       
-      if (response.success) {
+      // Check response like the AI page does
+      if (response && !response.error && response.response) {
+        console.log('AI processing successful, response:', response.response);
         setQuickAddStatus('success');
         // Refresh dashboard data to show new content
-        await fetchDashboardData();
+        setTimeout(async () => {
+          await fetchDashboardData();
+        }, 500);
       } else {
-        console.log('AI API returned failure:', response.error);
+        console.log('AI API returned failure:', response?.error || 'No response');
         setQuickAddStatus('error');
       }
     } catch (error) {
@@ -268,7 +289,7 @@ const DashboardPage: React.FC = () => {
       setQuickAddStatus('error');
     } finally {
       setIsProcessing(false);
-      // Reset to idle after showing status
+      // Reset to idle after showing status for 2 seconds
       setTimeout(() => {
         setQuickAddStatus('idle');
         setTranscript('');
@@ -475,7 +496,7 @@ const DashboardPage: React.FC = () => {
                 quickAddStatus === 'idle' && 'bg-gradient-to-r from-slate-700 via-blue-700 to-indigo-800 hover:from-slate-800 hover:via-blue-800 hover:to-indigo-900',
                 quickAddStatus === 'recording' && 'bg-gradient-to-r from-red-500 to-pink-500 animate-pulse',
                 quickAddStatus === 'processing' && 'bg-gradient-to-r from-yellow-500 to-orange-500',
-                quickAddStatus === 'success' && 'bg-gradient-to-r from-green-500 to-emerald-500',
+                quickAddStatus === 'success' && 'bg-gradient-to-r from-blue-500 to-blue-600',
                 quickAddStatus === 'error' && 'bg-gradient-to-r from-red-500 to-red-600'
               )}
             >
@@ -515,7 +536,7 @@ const DashboardPage: React.FC = () => {
                 
                 {quickAddStatus === 'success' && (
                   <>
-                    <CheckIcon className="w-5 h-5" />
+                    <CheckIcon className="w-5 h-5 text-white" />
                     <span>Done!</span>
                   </>
                 )}
