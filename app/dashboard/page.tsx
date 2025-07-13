@@ -63,7 +63,12 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   const initializeSpeechRecognition = () => {
-    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
+    console.log('Initializing speech recognition...');
+    console.log('Window available:', typeof window !== 'undefined');
+    console.log('webkitSpeechRecognition available:', typeof window !== 'undefined' && 'webkitSpeechRecognition' in window);
+    console.log('SpeechRecognition available:', typeof window !== 'undefined' && 'SpeechRecognition' in window);
+    
+    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = true;
@@ -72,13 +77,19 @@ const DashboardPage: React.FC = () => {
 
       recognitionRef.current.onresult = (event: any) => {
         let finalTranscript = '';
+        let interimTranscript = '';
+        
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
           }
         }
+        
         if (finalTranscript) {
-          setTranscript(finalTranscript);
+          console.log('Final transcript:', finalTranscript);
+          setTranscript(prev => prev + finalTranscript);
         }
       };
 
@@ -88,11 +99,19 @@ const DashboardPage: React.FC = () => {
         setIsRecording(false);
         setTimeout(() => setQuickAddStatus('idle'), 2000);
       };
+      
+      recognitionRef.current.onstart = () => {
+        console.log('Speech recognition started');
+        setIsRecording(true);
+      };
 
       recognitionRef.current.onend = () => {
         setIsRecording(false);
         if (transcript && quickAddStatus === 'recording') {
+          setQuickAddStatus('processing');
           processVoiceInput(transcript);
+        } else if (quickAddStatus === 'recording') {
+          setQuickAddStatus('idle');
         }
       };
     }
@@ -175,7 +194,16 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleQuickAdd = () => {
+    console.log('Quick Add clicked, current status:', quickAddStatus);
+    console.log('Recognition ref available:', !!recognitionRef.current);
+    
     if (quickAddStatus === 'idle') {
+      if (!recognitionRef.current) {
+        console.error('Speech recognition not available');
+        setQuickAddStatus('error');
+        setTimeout(() => setQuickAddStatus('idle'), 2000);
+        return;
+      }
       startVoiceRecording();
     } else if (quickAddStatus === 'recording') {
       stopVoiceRecording();
@@ -183,39 +211,56 @@ const DashboardPage: React.FC = () => {
   };
 
   const startVoiceRecording = () => {
+    console.log('Starting voice recording...');
     if (recognitionRef.current) {
-      setTranscript('');
-      setQuickAddStatus('recording');
-      setIsRecording(true);
-      recognitionRef.current.start();
+      try {
+        setTranscript('');
+        setQuickAddStatus('recording');
+        setIsRecording(true);
+        recognitionRef.current.start();
+        console.log('Speech recognition started successfully');
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        setQuickAddStatus('error');
+        setIsRecording(false);
+        setTimeout(() => setQuickAddStatus('idle'), 2000);
+      }
+    } else {
+      console.error('Recognition ref not available in startVoiceRecording');
     }
   };
 
   const stopVoiceRecording = () => {
-    if (recognitionRef.current) {
+    if (recognitionRef.current && isRecording) {
       recognitionRef.current.stop();
       setIsRecording(false);
+      // Don't change status here, let onend handle it
     }
   };
 
   const processVoiceInput = async (voiceText: string) => {
+    console.log('Processing voice input:', voiceText);
+    
     if (!voiceText.trim()) {
+      console.log('Empty voice input');
       setQuickAddStatus('error');
       setTimeout(() => setQuickAddStatus('idle'), 2000);
       return;
     }
 
-    setQuickAddStatus('processing');
     setIsProcessing(true);
 
     try {
+      console.log('Sending to AI API:', voiceText.trim());
       const response = await aiAPI.sendMessage(voiceText.trim());
+      console.log('AI API response:', response);
       
       if (response.success) {
         setQuickAddStatus('success');
         // Refresh dashboard data to show new content
         await fetchDashboardData();
       } else {
+        console.log('AI API returned failure:', response.error);
         setQuickAddStatus('error');
       }
     } catch (error) {
@@ -378,15 +423,23 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
+      .soundwave-1 { animation: soundwave 0.8s ease-in-out infinite; }
+      .soundwave-2 { animation: soundwave 0.8s ease-in-out infinite 0.1s; }
+      .soundwave-3 { animation: soundwave 0.8s ease-in-out infinite 0.2s; }
+      .soundwave-4 { animation: soundwave 0.8s ease-in-out infinite 0.3s; }
+      .soundwave-5 { animation: soundwave 0.8s ease-in-out infinite 0.4s; }
+      
       @keyframes soundwave {
-        0%, 100% { transform: scaleY(1); }
-        50% { transform: scaleY(1.5); }
+        0%, 100% { transform: scaleY(0.5); opacity: 0.7; }
+        50% { transform: scaleY(1.5); opacity: 1; }
       }
     `;
     document.head.appendChild(style);
     
     return () => {
-      document.head.removeChild(style);
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
     };
   }, []);
   const totalContributions = heatmapView === 'month' 
@@ -438,13 +491,15 @@ const DashboardPage: React.FC = () => {
                 
                 {quickAddStatus === 'recording' && (
                   <>
-                    <div className="relative">
-                      <MicrophoneIcon className="w-5 h-5" />
+                    <div className="relative flex items-center">
+                      <MicrophoneIcon className="w-5 h-5 mr-2" />
                       {/* Sound wave animation */}
-                      <div className="absolute -inset-2 opacity-75">
-                        <div className="h-1 bg-white rounded-full animate-pulse" style={{ animation: 'soundwave 1s ease-in-out infinite' }} />
-                        <div className="h-1 bg-white rounded-full animate-pulse" style={{ animation: 'soundwave 1s ease-in-out infinite 0.1s' }} />
-                        <div className="h-1 bg-white rounded-full animate-pulse" style={{ animation: 'soundwave 1s ease-in-out infinite 0.2s' }} />
+                      <div className="flex items-center space-x-1">
+                        <div className="w-1 h-3 bg-white rounded-full soundwave-1" />
+                        <div className="w-1 h-4 bg-white rounded-full soundwave-2" />
+                        <div className="w-1 h-2 bg-white rounded-full soundwave-3" />
+                        <div className="w-1 h-5 bg-white rounded-full soundwave-4" />
+                        <div className="w-1 h-3 bg-white rounded-full soundwave-5" />
                       </div>
                     </div>
                     <span>Listening...</span>
